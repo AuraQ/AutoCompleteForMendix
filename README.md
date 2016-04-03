@@ -43,7 +43,7 @@ Where you have a large number of available options for a reference selector, use
 - **'Input too short' text**: The string to display if the minimum input length has not been reached. Value can make use of tokens ${minLength} for minimum length setting and ${remainLength} for the number of characters remaining before the search executes
 
 ## Events
-- On change: The microflow that will be run when an item is selected or the control is cleared.
+- **On change**: The microflow that will be run when an item is selected or the control is cleared.
 
 # Limitations / Known Issues
 
