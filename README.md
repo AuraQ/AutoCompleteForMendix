@@ -1,4 +1,4 @@
-# Auto Complete for Mendix
+# AutoComplete for Mendix
 
 This widget is a wrapper for the [Select2 plugin](https://select2.github.io/)  allowing a user to filter the options displayed in a dropdown when setting a reference association.
 
