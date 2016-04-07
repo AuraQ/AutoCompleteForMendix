@@ -27,9 +27,9 @@ Where you have a large number of available options for a reference selector, use
 - **Search Method**: 'starts-with' or 'contains'; controls how the attribute is searched
 
 ## Result Display
-- **Selected Item**: The attribute to display in the field when an item is selected.
-- **Item template**: The template (treated as HTML) to use for a search result in the dropdown. If left empty the selected item attribute will be used. This value is wrapped in a div element with a class of 'autoCompleteResult' 
-- **Item Attributes**: The mapping of attributes to variable names for replacement in the Item template.
+- **Selected Template**: The template (treated as Plain Text) to use for a selected item. 
+- **Result Template**: The template (treated as HTML) to use for a search result in the dropdown. If left empty the 'Selected Template' property will be used. This value is wrapped in a div element with a class of 'autoCompleteResult' 
+- **Template Attributes**: The mapping of attributes to variable names for replacement in 'Selected Template' and 'Result Template'.
 - **Sort Order**: The attributes that the results should be sorted by.
 
 ## Display
