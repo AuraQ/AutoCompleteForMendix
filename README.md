@@ -45,7 +45,11 @@ Where you have a large number of available options for a reference selector, use
 ## Events
 - **On change**: The microflow that will be run when an item is selected or the control is cleared.
 
-# Limitations / Known Issues
+# Known Issues
+
+See [here](https://github.com/AuraQ/AutoCompleteForMendix/issues) for all outstanding issues.
+
+# Limitations
 
 - ‘Search attribute’ only supports ‘String’ data types.
 - ‘Selected item’ only supports ‘String’ data types. (will be added in v2)

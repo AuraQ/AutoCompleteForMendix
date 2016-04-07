@@ -193,6 +193,15 @@
                 <translation lang="en_US">Please enter at least ${minLength} characters. (${remainLength} more to go!)</translation>
             </translations>
         </property>
+        <property key="noResultsText" type="translatableString">
+            <caption>'No results found' text</caption>
+            <category>Strings</category>
+            <description>The string to display if no results are found.</description>
+            <translations>
+                <translation lang="en_GB">No results found.</translation>
+                <translation lang="en_US">No results found.</translation>
+            </translations>
+        </property>
         <property key="onChangeMicroflow" type="microflow" required="false">
             <caption>On change</caption>
             <category>Events</category>

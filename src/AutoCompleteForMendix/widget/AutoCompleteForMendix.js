@@ -165,6 +165,9 @@ require({
                             message = message.split("${remainLength}").join(remain);
                             
                             return message;
+                        },
+                        noResults: function(){
+                            return self.noResultsText;
                         }
                     },
                     templateResult : function (item) {
