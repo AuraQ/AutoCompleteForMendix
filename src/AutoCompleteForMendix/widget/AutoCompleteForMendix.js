@@ -4,9 +4,9 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 1.0.0
+    @version   : 2.0.0
     @author    : Iain Lindsay
-    @date      : 3/31/2016
+    @date      : 2016-04-07
     @copyright : AuraQ Limited 2016
     @license   : Apache V2
 
@@ -65,7 +65,7 @@ require({
         _reference: null,
         _attributeList: null,
         _displayTemplate: "",
-        _selectedItemAttribute:"",
+        _selectedTemplate: "",
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -89,7 +89,7 @@ require({
             this._reference = this.dataAssociation.split('/')[0];
             this._attributeList = this._variableContainer;
             this._displayTemplate = this.displayTemplate;
-            this._selectedItemAttribute = this.selectedItemAttribute;
+            this._selectedTemplate = this.selectedTemplate;
             
             // issues with the sort parameters being persisted between widget instances mean we set the sort array to empty.
             this._sortParams = [];
@@ -209,7 +209,9 @@ require({
                         guid: referencedObject,
                         callback: dojoLang.hitch(this, function(obj){                             
                             // load the initial value
-                            var $option = $('<option selected>' + obj.get(this._selectedItemAttribute) + '</option>').val(obj.getGuid());
+                            var selectedDisplay = this._mergeTemplate(obj, this._selectedTemplate, true, false);
+                            
+                            var $option = $('<option selected>' + selectedDisplay + '</option>').val(obj.getGuid());
 
                             this._$combo.append($option).trigger('change'); // append the option and update Select2                                 
                         })
@@ -410,40 +412,21 @@ require({
             var matches = [];
             dojoArray.forEach(objs, function (availableObject, index) {
                 
-                var replaceattributes = [],
-                    value;
+                var resultDisplay = "",
+                    selectedDisplay = "";
                 
-                for (var i = 0; i < self._attributeList.length; i++) {
-                    if (availableObject.get(self._attributeList[i].variableAttribute) !== null) {
-                        value = self._fetchAttribute(availableObject, self._attributeList[i].variableAttribute, i);
-                        
-                        replaceattributes.push({
-                            id: i,
-                            variable: self._attributeList[i].variableName,
-                            value: value
-                        });
-                    }
-                }                        
-                                        
-                var selectedItemValue = self._checkString(mx.parser.formatAttribute(availableObject, self._selectedItemAttribute));
+                // default to selected template
+                var resultTemplate = self._displayTemplate || self._selectedTemplate;
                 
-                // default to selectedItem if no template provided
-                var resultValue = self._displayTemplate || selectedItemValue;
-                
-                var settings = null,
-                attr = null;
-
-                for (attr in replaceattributes) {
-                    settings = replaceattributes[attr];
-                    resultValue = resultValue.split("${" + settings.variable + "}").join(settings.value);
-                }
-                
+                resultDisplay = self._mergeTemplate(availableObject, resultTemplate,false, false);               
                 var div = dom.div({
                     "class": "autoCompleteResult"
                 });
-                div.innerHTML = resultValue;
+                div.innerHTML = resultDisplay;
                 
-                var text = selectedItemValue,
+                selectedDisplay = self._mergeTemplate(availableObject, self._selectedTemplate,true, false);
+                
+                var text = selectedDisplay,
                 guid = availableObject.getGuid(),
                 item = {
                     id: guid,
@@ -458,7 +441,39 @@ require({
             };
         },
         
-        _fetchAttribute: function (obj, attr, i) {
+        _mergeTemplate : function(obj, template, escapeTemplate, escapeValues) {
+            var self = this;
+            var replaceattributes = [],
+                    value;
+                
+            if( escapeTemplate ){
+                template = dom.escapeString(template);
+            }
+            
+            for (var i = 0; i < self._attributeList.length; i++) {
+                if (obj.get(self._attributeList[i].variableAttribute) !== null) {
+                    value = self._fetchAttribute(obj, self._attributeList[i].variableAttribute, i, escapeValues);
+                    
+                    replaceattributes.push({
+                        id: i,
+                        variable: self._attributeList[i].variableName,
+                        value: value
+                    });
+                }
+            }
+                                    
+            var settings = null,
+            attr = null;
+
+            for (attr in replaceattributes) {
+                settings = replaceattributes[attr];
+                template = template.split("${" + settings.variable + "}").join(settings.value);
+            }
+             
+             return template;
+        },
+        
+        _fetchAttribute: function (obj, attr, i, escapeValues) {
             logger.debug(this.id + "._fetchAttribute");
             var returnvalue = "",
                 options = {},
@@ -478,7 +493,7 @@ require({
                 }
                 returnvalue = this._parseDate(this._attributeList[i].datetimeformat, options, obj.get(attr));
             } else if (obj.isEnum(attr)) {
-                returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)));
+                returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), escapeValues);
             }  else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
                 numberOptions = {};
                 numberOptions.places = this._attributeList[i].decimalPrecision;
@@ -490,7 +505,7 @@ require({
                 returnvalue = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
             } else {
                 if (obj.getAttributeType(attr) === "String") {
-                    returnvalue = this._checkString(mx.parser.formatAttribute(obj, attr));
+                    returnvalue = this._checkString(mx.parser.formatAttribute(obj, attr), escapeValues);
                 }
             }
                 
@@ -501,12 +516,12 @@ require({
             }
         },
         
-        _checkString: function (string) {
+        _checkString: function (str, escapeValues) {
             logger.debug(this.id + "._checkString");
-            if (string.indexOf("<script") > -1 ) {
-                string = dom.escapeString(string);
+            if (str.indexOf("<script") > -1 || escapeValues) {
+                str = dom.escapeString(str);
             }
-            return string;
+            return str;
         },
 
         _parseDate: function (format, options, value) {

@@ -48,11 +48,14 @@ Where you have a large number of available options for a reference selector, use
 # Limitations / Known Issues
 
 - ‘Search attribute’ only supports ‘String’ data types.
-- ‘Selected item’ only supports ‘String’ data types.
-- ‘Item Attributes’ do not support Enum or DateTime types
-- Selected item display does not support templating.
+- ‘Selected item’ only supports ‘String’ data types. (will be added in v2)
+- ‘Item Attributes’ do not support Enum or DateTime types (will be added in v2)
+- Selected item display does not support templating. (will be added in v2)
+
+# Breaking changes (v2):
+- Selected Item (Result display) - renamed to 'Selected Template' and changed to string to support templates
 
 # Thanks
 
-[Mendix](https://github.com/mendix) for the [FormatString widget](https://github.com/mendix/FormatString) which we heavily borrowed from for the templating, date and number formatting :)
+[Mendix](https://github.com/mendix) for the [FormatString widget](https://github.com/mendix/FormatString) which we heavily borrowed from for the templating, date and number formatting :)  
 [Select2](https://github.com/select2) for the autocomplete plugin which this widget is based on.
