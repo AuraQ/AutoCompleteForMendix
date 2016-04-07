@@ -42,10 +42,11 @@ require({
     "dojo/text",
     "dojo/html",
     "dojo/_base/event",
+    "dojo/_base/kernel",
     "jqwrapper",
     "select2",
     "dojo/text!AutoCompleteForMendix/widget/template/AutoCompleteForMendix.html"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, _jqwrapper, _select2, widgetTemplate) {
+], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, dojo, _jqwrapper, _select2, widgetTemplate) {
     "use strict";
 
     var $ = _jqwrapper;
@@ -459,15 +460,38 @@ require({
         
         _fetchAttribute: function (obj, attr, i) {
             logger.debug(this.id + "._fetchAttribute");
-            var returnvalue = "";
+            var returnvalue = "",
+                options = {},
+                numberOptions = null;
 
              // Referenced object might be empty, can't fetch an attr on empty
             if (!obj) {
                 return "";
             }
 
-            if (obj.getAttributeType(attr) === "String") {
-                returnvalue = this._checkString(mx.parser.formatAttribute(obj, attr));
+            if (obj.isDate(attr)) {
+                if (this._attributeList[i].datePattern !== "") {
+                    options.datePattern = this._attributeList[i].datePattern;
+                }
+                if (this._attributeList[i].timePattern !== "") {
+                    options.timePattern = this._attributeList[i].timePattern;
+                }
+                returnvalue = this._parseDate(this._attributeList[i].datetimeformat, options, obj.get(attr));
+            } else if (obj.isEnum(attr)) {
+                returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)));
+            }  else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
+                numberOptions = {};
+                numberOptions.places = this._attributeList[i].decimalPrecision;
+                if (this._attributeList[i].groupDigits) {
+                    numberOptions.locale = dojo.locale;
+                    numberOptions.groups = true; 
+                }
+
+                returnvalue = mx.parser.formatValue(obj.get(attr), obj.getAttributeType(attr), numberOptions);
+            } else {
+                if (obj.getAttributeType(attr) === "String") {
+                    returnvalue = this._checkString(mx.parser.formatAttribute(obj, attr));
+                }
             }
                 
             if (returnvalue === "") {
@@ -483,6 +507,20 @@ require({
                 string = dom.escapeString(string);
             }
             return string;
+        },
+
+        _parseDate: function (format, options, value) {
+            logger.debug(this.id + "._parseDate");
+            var datevalue = value;
+
+            if (value === "") {
+                return value;
+            }
+
+            options.selector = format;
+            datevalue = dojo.date.locale.format(new Date(value), options);
+            
+            return datevalue;
         },
         
         _execMf: function (guid, mf, cb) {

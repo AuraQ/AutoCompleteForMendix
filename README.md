@@ -51,3 +51,8 @@ Where you have a large number of available options for a reference selector, use
 - ‘Selected item’ only supports ‘String’ data types.
 - ‘Item Attributes’ do not support Enum or DateTime types
 - Selected item display does not support templating.
+
+# Thanks
+
+[Mendix](https://github.com/mendix) for the [FormatString widget](https://github.com/mendix/FormatString) which we heavily borrowed from for the templating, date and number formatting :)
+[Select2](https://github.com/select2) for the autocomplete plugin which this widget is based on.

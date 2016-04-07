@@ -82,14 +82,44 @@
                     <attributeTypes>
                         <attributeType name="AutoNumber"/>
                         <attributeType name="String" />
-                        <!--<attributeType name="Enum"/>--> <!--TODO!-->
+                        <attributeType name="Enum"/>
                         <attributeType name="Integer"/>
                         <attributeType name="Float"/>
                         <attributeType name="Currency"/>
                         <attributeType name="Decimal"/>
                         <attributeType name="Long"/>
-                        <!--<attributeType name="DateTime"/>--> <!--TODO!-->
+                        <attributeType name="DateTime"/>
                     </attributeTypes>
+                </property>
+                <property key="datetimeformat" type="enumeration" defaultValue="datetime" >
+                    <caption>Date format</caption>
+                    <category>Behaviour</category>
+                    <description>Shows date and/or time according to locale of user.</description>
+                    <enumerationValues>
+                        <enumerationValue key="datetime">Date and time </enumerationValue>
+                        <enumerationValue key="date">Date</enumerationValue>
+                        <enumerationValue key="time">Time</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="datePattern" type="translatableString" required="false">
+                    <caption>Date pattern</caption>
+                    <category>Behaviour</category>
+                    <description>Optional, date pattern to override date part according to dojo/date/locale</description>
+                </property>
+                <property key="timePattern" type="translatableString" required="false">
+                    <caption>Time pattern</caption>
+                    <category>Behaviour</category>
+                    <description>Optional, time pattern to override time part according to dojo/date/locale</description>
+                </property>
+                <property key="decimalPrecision" type="integer" defaultValue="0">
+                    <caption>Decimal precision</caption>
+                    <category>Behaviour</category>
+                    <description>Amount of decimals</description>
+                </property>
+                <property key="groupDigits" type="boolean" defaultValue="true">
+                    <caption>Group digits</caption>
+                    <category>Behaviour</category>
+                    <description>Displays a numeric value with group digits</description>
                 </property>
             </properties>
         </property>  
