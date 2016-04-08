@@ -184,7 +184,7 @@
                 <translation lang="en_US">Select an item from the dropdown...</translation>
             </translations>
         </property>
-        <property key="inputTooShortText" type="translatableString">
+        <property key="inputTooShortText" type="translatableString" required="false">
             <caption>'Input too short' text</caption>
             <category>Strings</category>
             <description>The string to display if the minimum input length has not been reached. Use tokens ${minLength} for minimum length setting and ${remainLength} for remaining characters required.</description>
@@ -193,13 +193,22 @@
                 <translation lang="en_US">Please enter at least ${minLength} characters. (${remainLength} more to go!)</translation>
             </translations>
         </property>
-        <property key="noResultsText" type="translatableString">
+        <property key="noResultsText" type="translatableString" required="true">
             <caption>'No results found' text</caption>
             <category>Strings</category>
             <description>The string to display if no results are found.</description>
             <translations>
                 <translation lang="en_GB">No results found.</translation>
                 <translation lang="en_US">No results found.</translation>
+            </translations>
+        </property>
+        <property key="searchingText" type="translatableString" required="true">
+            <caption>'Searching' text</caption>
+            <category>Strings</category>
+            <description>The string to display while the search is executing.</description>
+            <translations>
+                <translation lang="en_GB">Searching...</translation>
+                <translation lang="en_US">Searching...</translation>
             </translations>
         </property>
         <property key="onChangeMicroflow" type="microflow" required="false">

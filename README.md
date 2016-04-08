@@ -48,7 +48,7 @@ Where you have a large number of available options for a reference selector, use
 
 # Known Issues
 
-See [here](https://github.com/AuraQ/AutoCompleteForMendix/issues) for all outstanding issues.
+See [here](https://github.com/AuraQ/AutoCompleteForMendix/issues) for all outstanding issues or to raise a new issue, enhancement etc.
 
 # Limitations
 

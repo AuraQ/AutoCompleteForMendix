@@ -168,6 +168,9 @@ require({
                         },
                         noResults: function(){
                             return self.noResultsText;
+                        },
+                        searching: function(){
+                            return self.searchingText;
                         }
                     },
                     templateResult : function (item) {
