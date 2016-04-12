@@ -6,7 +6,7 @@
     @file      : AutoCompleteForMendix.js
     @version   : 2.0.0
     @author    : Iain Lindsay
-    @date      : 2016-04-07
+    @date      : 2016-04-12
     @copyright : AuraQ Limited 2016
     @license   : Apache V2
 
@@ -66,6 +66,7 @@ require({
         _attributeList: null,
         _displayTemplate: "",
         _selectedTemplate: "",
+        variableData : [],
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -208,26 +209,7 @@ require({
                 });
                     
                 // set the default value for the dropdown (if reference is already set)
-                var referencedObject = this._contextObj.get(this._reference);
-                
-                if(referencedObject !== null && referencedObject !== "") {                        
-                    mx.data.get({
-                        guid: referencedObject,
-                        callback: dojoLang.hitch(this, function(obj){                             
-                            // load the initial value
-                            var selectedDisplay = this._mergeTemplate(obj, this._selectedTemplate, true, false);
-                            
-                            var $option = $('<option selected>' + selectedDisplay + '</option>').val(obj.getGuid());
-
-                            this._$combo.append($option).trigger('change'); // append the option and update Select2                                 
-                        })
-                    });
-                };
-
-                // Execute callback.
-                if (typeof callback !== 'undefined') {
-                    callback();
-                }
+                this._loadCurrentValue(callback);
             }
         },
 
@@ -401,10 +383,7 @@ require({
                         offset: 0
                     },
                     callback: dojoLang.hitch(self, function(objs){
-                        
-                        var results = self._processResults(objs);                                
-                        
-                        callback(results);
+                        var results = self._processResults(objs, self._formatResults, callback);
                     })
                 });
             }
@@ -412,71 +391,133 @@ require({
             request();
         },
         
-        _processResults : function (objs) {
+        _processResults : function (objs, formatResultsFunction, callback) {
             var self = this;
-            // an array that will be populated with our results
-            var matches = [];
+            this.variableData = []; // this will hold our variables
+            var referenceAttributes = [];
+            
             dojoArray.forEach(objs, function (availableObject, index) {
                 
-                var resultDisplay = "",
-                    selectedDisplay = "";
+                var currentVariable = {};
+                currentVariable.guid = availableObject.getGuid();
+                currentVariable.variables = [];
                 
-                // default to selected template
-                var resultTemplate = self._displayTemplate || self._selectedTemplate;
+                for (var i = 0; i < self._attributeList.length; i++) {
+                    if (availableObject.get(self._attributeList[i].variableAttribute) !== null) {
+                        var value = self._fetchAttribute(availableObject, self._attributeList[i].variableAttribute, i);
+                        
+                        currentVariable.variables.push({
+                            id: i,
+                            variable: self._attributeList[i].variableName,
+                            value: value
+                        });                                                                        
+                    } else {
+                        // add a placeholder for our reference variable value.
+                        currentVariable.variables.push({
+                            id: i,
+                            variable: self._attributeList[i].variableName,
+                            value: "" // set this later
+                        });
+                        
+                        var referenceAttribute = self._attributeList[i];
+                        referenceAttribute.attributeIndex = i;
+                        referenceAttribute.parentObj = availableObject;
+                        
+                        referenceAttributes.push(referenceAttribute);
+                    }
+                }
                 
-                resultDisplay = self._mergeTemplate(availableObject, resultTemplate,false, false);               
+                self.variableData.push(currentVariable);                                        
+            });  
+            
+            if( referenceAttributes.length > 0 ){
+                // get values for our references
+                this._fetchReferences(referenceAttributes, formatResultsFunction, callback);
+                
+            } else{
+                // format the results
+                dojoLang.hitch(this, formatResultsFunction, callback)();
+            }                        
+        },
+        
+        _formatResults : function(callback){
+            // an array that will be populated with our results
+            var matches = [],
+                resultDisplay = "",
+                selectedDisplay = "";
+            
+            // default to selected template            
+            var resultTemplate = this._displayTemplate || this._selectedTemplate;
+            
+            for(var i = 0;i< this.variableData.length; i++){
+                resultDisplay = this._mergeTemplate(this.variableData[i].variables, resultTemplate, false);
                 var div = dom.div({
                     "class": "autoCompleteResult"
                 });
                 div.innerHTML = resultDisplay;
+                selectedDisplay = this._mergeTemplate(this.variableData[i].variables, this._selectedTemplate, true);
                 
-                selectedDisplay = self._mergeTemplate(availableObject, self._selectedTemplate,true, false);
-                
-                var text = selectedDisplay,
-                guid = availableObject.getGuid(),
-                item = {
-                    id: guid,
-                    text: text,
+                var item = {
+                    id: this.variableData[i].guid,
+                    text: selectedDisplay,
                     dropdownDisplay: div
-                };    
-                                    
-                matches.push(item);
-            });
-            return {
-                results: matches
-            };
-        },
-        
-        _mergeTemplate : function(obj, template, escapeTemplate, escapeValues) {
-            var self = this;
-            var replaceattributes = [],
-                    value;
+                }; 
                 
-            if( escapeTemplate ){
-                template = dom.escapeString(template);
+                matches.push(item);
             }
             
-            for (var i = 0; i < self._attributeList.length; i++) {
-                if (obj.get(self._attributeList[i].variableAttribute) !== null) {
-                    value = self._fetchAttribute(obj, self._attributeList[i].variableAttribute, i, escapeValues);
-                    
-                    replaceattributes.push({
-                        id: i,
-                        variable: self._attributeList[i].variableName,
-                        value: value
-                    });
+            if (callback && typeof callback === "function") {
+                logger.debug(this.id + "._formatData callback");
+                callback({
+                    results: matches
+                });
+            }
+        },
+        
+        _loadCurrentValue : function(callback){
+            // set the default value for the dropdown (if reference is already set)
+            var referencedObjectGuid = this._contextObj.get(this._reference);
+            
+            if(referencedObjectGuid !== null && referencedObjectGuid !== "") {                        
+                mx.data.get({
+                    guid: referencedObjectGuid,
+                    callback: dojoLang.hitch(this, function(obj){                             
+                        this._processResults([obj],this._formatCurrentValue, callback);              
+                    })
+                });
+            } else{                
+                if (callback && typeof callback === "function") {                
+                    callback();
                 }
-            }
-                                    
-            var settings = null,
-            attr = null;
+            };
 
-            for (attr in replaceattributes) {
-                settings = replaceattributes[attr];
-                template = template.split("${" + settings.variable + "}").join(settings.value);
+            // Execute callback.
+            if (typeof callback !== 'undefined') {
+                callback();
             }
-             
-             return template;
+        },
+        
+        _formatCurrentValue : function(callback){
+            var selectedDisplay = "";
+            
+            // we only want the first match (should never have multiple)
+            if( this.variableData && this.variableData.length > 0){
+                var currentVariable = this.variableData[0];
+                
+                selectedDisplay = this._mergeTemplate(currentVariable.variables, this._selectedTemplate, true);
+                
+                // load the initial value
+                var $option = $('<option selected>' + selectedDisplay + '</option>').val(currentVariable.guid);
+
+                this._$combo.append($option).trigger('change'); // append the option and update Select2
+            }
+            
+            if (callback && typeof callback === "function") {
+                logger.debug(this.id + "._formatData callback");
+                callback({
+                    results: matches
+                });
+            }
         },
         
         _fetchAttribute: function (obj, attr, i, escapeValues) {
@@ -521,6 +562,57 @@ require({
                 return returnvalue;
             }
         },
+
+        _fetchReferences: function (list, formatResultsFunction, callback) {
+            logger.debug(this.id + "._fetchReferences");
+            var self = this;
+            var l = list.length;
+
+            var callbackfunction = function (data, obj) {
+                logger.debug(this.id + "._fetchReferences get callback");
+                var value = this._fetchAttribute(obj, data.split[2], data.attributeIndex);
+                
+                var result = $.grep(this.variableData, function(e){ 
+                    return e.guid == data.parentObj.getGuid(); 
+                });
+                
+                if( result && result[0] ){
+                    var resultVariable = $.grep(result[0].variables, function(e){ return e.id == data.attributeIndex; });
+                    if( resultVariable && resultVariable[0]){
+                        resultVariable[0].value = value;
+                    }
+                }
+                                
+                l--;
+                if (l <= 0) {
+                    // format our results
+                    dojoLang.hitch(this, formatResultsFunction, callback)();
+                }
+            };
+
+            for (var i = 0; i < list.length; i++) {
+                var listObj = list[i],
+                    split = list[i].variableAttribute.split("/"),
+                    guid = list[i].parentObj.getReference(split[0]),
+                    attributeIndex = list[i].attributeIndex,
+                    parentObj = list[i].parentObj,
+                    dataparam = {
+                        i: i,
+                        listObj: listObj,
+                        split: split,
+                        attributeIndex: attributeIndex,
+                        parentObj : parentObj
+                    };
+
+
+                if (guid !== "") {
+                    mx.data.get({
+                        guid: guid,
+                        callback: dojoLang.hitch(this, callbackfunction, dataparam)
+                    });
+                }
+            }
+        },
         
         _checkString: function (str, escapeValues) {
             logger.debug(this.id + "._checkString");
@@ -542,6 +634,21 @@ require({
             datevalue = dojo.date.locale.format(new Date(value), options);
             
             return datevalue;
+        },
+        
+        _mergeTemplate : function(variables, template, escapeTemplate) {
+            var self = this;
+                
+            if( escapeTemplate ){
+                template = dom.escapeString(template);
+            }
+                                    
+            for (var attr in variables) {
+                var settings = variables[attr];
+                template = template.split("${" + settings.variable + "}").join(settings.value);
+            }
+             
+             return template;
         },
         
         _execMf: function (guid, mf, cb) {
