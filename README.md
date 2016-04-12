@@ -42,6 +42,7 @@ Where you have a large number of available options for a reference selector, use
 - **Placeholder text:** The text to be shown in the dropdown when no item has been selected.
 - **'Input too short' text**: The string to display if the minimum input length has not been reached. Value can make use of tokens ${minLength} for minimum length setting and ${remainLength} for the number of characters remaining before the search executes
 - **'No results found' text:** The text to be shown in the dropdown when a search returns no results.
+- **'Searching' text:** The text to displaying while a search is executing.
 
 ## Events
 - **On change**: The microflow that will be run when an item is selected or the control is cleared.
