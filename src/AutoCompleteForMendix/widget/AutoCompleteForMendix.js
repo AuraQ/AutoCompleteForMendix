@@ -305,11 +305,19 @@ require({
                 this._handles = [];
             }
 
-            // When a mendix object exists create subscribtions.
+            // When a mendix object exists create subscriptions.
             if (this._contextObj) {
                 var objectHandle = this.subscribe({
                     guid: this._contextObj.getGuid(),
                     callback: dojoLang.hitch(this, function(guid) {
+                        this._updateRendering();
+                    })
+                });
+
+                var attrHandle = this.subscribe({
+                    guid: this._contextObj.getGuid(),
+                    attr: this._reference,
+                    callback: dojoLang.hitch(this, function(guid, attr, attrValue) {
                         this._updateRendering();
                     })
                 });
@@ -320,7 +328,7 @@ require({
                     callback: dojoLang.hitch(this, this._handleValidation)
                 });
 
-                this._handles = [ objectHandle, validationHandle ];
+                this._handles = [ objectHandle, attrHandle, validationHandle ];
             }
         },
         
