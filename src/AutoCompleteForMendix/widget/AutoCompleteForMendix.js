@@ -427,11 +427,15 @@ require({
                             value: "" // set this later
                         });
                         
-                        var referenceAttribute = self._attributeList[i];
-                        referenceAttribute.attributeIndex = i;
-                        referenceAttribute.parentObj = availableObject;
+                        var split = self._attributeList[i].variableAttribute.split("/");
+                        var refAttribute = {};
+                        for(var a in self._attributeList[i]) refAttribute[a]=self._attributeList[i][a];
+                        refAttribute.attributeIndex = i;
+                        refAttribute.parentGuid = availableObject.getGuid();
+                        refAttribute.referenceGuid = availableObject.getReference(split[0]);
+                        refAttribute.referenceAttribute = split[2];
                         
-                        referenceAttributes.push(referenceAttribute);
+                        referenceAttributes.push(refAttribute);
                     }
                 }
                 
@@ -440,8 +444,7 @@ require({
             
             if( referenceAttributes.length > 0 ){
                 // get values for our references
-                this._fetchReferences(referenceAttributes, formatResultsFunction, callback);
-                
+                this._fetchReferences(referenceAttributes, formatResultsFunction, callback);                
             } else{
                 // format the results
                 dojoLang.hitch(this, formatResultsFunction, callback)();
@@ -571,17 +574,17 @@ require({
             }
         },
 
-        _fetchReferences: function (list, formatResultsFunction, callback) {
+        _fetchReferences: function (referenceAttributes, formatResultsFunction, callback) {
             logger.debug(this.id + "._fetchReferences");
             var self = this;
-            var l = list.length;
+            var l = referenceAttributes.length;
 
             var callbackfunction = function (data, obj) {
                 logger.debug(this.id + "._fetchReferences get callback");
-                var value = this._fetchAttribute(obj, data.split[2], data.attributeIndex);
+                var value = this._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
                 
                 var result = $.grep(this.variableData, function(e){ 
-                    return e.guid == data.parentObj.getGuid(); 
+                    return e.guid == data.parentGuid; 
                 });
                 
                 if( result && result[0] ){
@@ -598,18 +601,19 @@ require({
                 }
             };
 
-            for (var i = 0; i < list.length; i++) {
-                var listObj = list[i],
-                    split = list[i].variableAttribute.split("/"),
-                    guid = list[i].parentObj.getReference(split[0]),
-                    attributeIndex = list[i].attributeIndex,
-                    parentObj = list[i].parentObj,
+            for (var i = 0; i < referenceAttributes.length; i++) {
+                var listObj = referenceAttributes[i],
+                    split = referenceAttributes[i].variableAttribute.split("/"),
+                    guid = referenceAttributes[i].referenceGuid,
+                    attributeIndex = referenceAttributes[i].attributeIndex,
+                    parentGuid = referenceAttributes[i].parentGuid,
+                    referenceAttribute = referenceAttributes[i].referenceAttribute,
                     dataparam = {
                         i: i,
                         listObj: listObj,
-                        split: split,
                         attributeIndex: attributeIndex,
-                        parentObj : parentObj
+                        parentGuid : parentGuid,
+                        referenceAttribute : referenceAttribute
                     };
 
 
