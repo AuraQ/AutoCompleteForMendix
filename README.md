@@ -54,11 +54,8 @@ See [here](https://github.com/AuraQ/AutoCompleteForMendix/issues) for all outsta
 # Limitations
 
 - ‘Search attribute’ only supports ‘String’ data types.
-- ‘Selected item’ only supports ‘String’ data types. (will be added in v2)
-- ‘Item Attributes’ do not support Enum or DateTime types (will be added in v2)
-- Selected item display does not support templating. (will be added in v2)
 
-# Breaking changes (v2):
+# v2.0.0 Breaking changes:
 - Selected Item (Result display) - renamed to 'Selected Template' and changed to string to support templates
 
 # Thanks
