@@ -128,7 +128,7 @@ require({
             
             this._initialiseQueryAdapter();
             
-            this._updateRendering();
+            //this._updateRendering();
             this._setupEvents();
         },
 
@@ -147,7 +147,7 @@ require({
                 }
                 this._contextObj = obj;
                 this._resetSubscriptions();
-                this._updateRendering();
+                this._updateRendering(null);
                 
                 this._$combo.select2({
                     dataAdapter: this._queryAdapter,
@@ -253,13 +253,27 @@ require({
         },
 
         // Rerender the interface.
-        _updateRendering: function() {
+        _updateRendering: function(guid) {
             logger.debug(this.id + "._updateRendering");
 
             // Important to clear all validations!
             this._clearValidations();
-        },
-
+			
+			//Also update the current selection
+			//this._loadCurrentValue(null);
+			if(guid && guid !== "") {
+                mx.data.get({
+                   guid: guid,
+                   callback: dojoLang.hitch(this, function(obj) {
+                        var reference = obj.get(this._reference);
+                        if (reference === null || reference === '') {
+                            this._$combo.val(null).trigger("change");
+                        }
+                   })
+                });
+			}
+        },			
+		
         // Handle validations.
         _handleValidation: function(validations) {
             logger.debug(this.id + "._handleValidation");
@@ -310,7 +324,7 @@ require({
                 var objectHandle = this.subscribe({
                     guid: this._contextObj.getGuid(),
                     callback: dojoLang.hitch(this, function(guid) {
-                        this._updateRendering();
+                        this._updateRendering(guid);
                     })
                 });
 
@@ -318,7 +332,7 @@ require({
                     guid: this._contextObj.getGuid(),
                     attr: this._reference,
                     callback: dojoLang.hitch(this, function(guid, attr, attrValue) {
-                        this._updateRendering();
+                        this._updateRendering(guid);
                     })
                 });
 
@@ -503,7 +517,7 @@ require({
             };
 
             // Execute callback.
-            if (typeof callback !== 'undefined') {
+            if (callback && typeof callback !== 'undefined') {
                 callback();
             }
         },
