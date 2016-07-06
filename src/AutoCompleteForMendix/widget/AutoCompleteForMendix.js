@@ -16,17 +16,7 @@
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
-require({
-    packages: [{
-         name: 'jqwrapper',
-         location: '../../widgets/AutoCompleteForMendix/lib',
-         main: 'jqwrapper'
-    }, {
-         name: 'select2',
-         location: '../../widgets/AutoCompleteForMendix/lib',
-         main: 'select2'
-    }]
-    }, [
+define([
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
     "dijit/_TemplatedMixin",
@@ -43,13 +33,13 @@ require({
     "dojo/html",
     "dojo/_base/event",
     "dojo/_base/kernel",
-    "jqwrapper",
-    "select2",
+    "AutoCompleteForMendix/lib/jquery-1.11.2",
+    "AutoCompleteForMendix/lib/select2",
     "dojo/text!AutoCompleteForMendix/widget/template/AutoCompleteForMendix.html"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, dojo, _jqwrapper, _select2, widgetTemplate) {
+], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, dojo, _jQuery, _select2, widgetTemplate) {
     "use strict";
 
-    var $ = _jqwrapper;
+    var $ = _jQuery.noConflict(true);
     $ = _select2.createInstance($);
     
     // Declare widget's prototype.
