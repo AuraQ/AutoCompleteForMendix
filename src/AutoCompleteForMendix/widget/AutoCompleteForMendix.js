@@ -4,7 +4,7 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 2.0.0
+    @version   : 2.0.1
     @author    : Iain Lindsay
     @date      : 2016-04-12
     @copyright : AuraQ Limited 2016
@@ -128,7 +128,6 @@ require({
             
             this._initialiseQueryAdapter();
             
-            //this._updateRendering();
             this._setupEvents();
         },
 
@@ -140,6 +139,10 @@ require({
             if (obj === null) {
                 if (!dojoClass.contains(this.domNode, 'hidden')) {
                     dojoClass.add(this.domNode, 'hidden');
+                }
+
+                if (callback && typeof callback === "function") {                
+                    callback();
                 }
             } else {
                 if (dojoClass.contains(this.domNode, 'hidden')) {
@@ -260,7 +263,6 @@ require({
             this._clearValidations();
 			
 			//Also update the current selection
-			//this._loadCurrentValue(null);
 			if(guid && guid !== "") {
                 mx.data.get({
                    guid: guid,
@@ -389,10 +391,10 @@ require({
             function request () {                                                
                 var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
                 var method = self.searchMethod == "startswith" ? "starts-with" : self.searchMethod;
-                
-                var searchConstraint = "[" + method + "(" + self.searchAttribute + ",'" + params.term + "')";    
+                var term = params.term.replace(/'/g, "''");
+                var searchConstraint = "[" + method + "(" + self.searchAttribute + ",'" + term + "')";    
                 if (method == "starts-with") {
-                    searchConstraint += " or " + self.searchAttribute + "='" + params.term + "'";    
+                    searchConstraint += " or " + self.searchAttribute + "='" + term + "'";    
                 }
                 searchConstraint += "]";
         
@@ -492,14 +494,14 @@ require({
             }
             
             if (callback && typeof callback === "function") {
-                logger.debug(this.id + "._formatData callback");
+                logger.debug(this.id + "._formatResults callback");
                 callback({
                     results: matches
                 });
             }
         },
         
-        _loadCurrentValue : function(callback){
+        _loadCurrentValue : function(callback){ 
             // set the default value for the dropdown (if reference is already set)
             var referencedObjectGuid = this._contextObj.get(this._reference);
             
@@ -515,11 +517,6 @@ require({
                     callback();
                 }
             };
-
-            // Execute callback.
-            if (callback && typeof callback !== 'undefined') {
-                callback();
-            }
         },
         
         _formatCurrentValue : function(callback){
@@ -538,10 +535,8 @@ require({
             }
             
             if (callback && typeof callback === "function") {
-                logger.debug(this.id + "._formatData callback");
-                callback({
-                    results: matches
-                });
+                logger.debug(this.id + "._formatCurrentValue callback");
+                callback();
             }
         },
         
