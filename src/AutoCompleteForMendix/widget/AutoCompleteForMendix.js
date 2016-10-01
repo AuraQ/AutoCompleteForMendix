@@ -150,7 +150,7 @@ require({
                 }
                 this._contextObj = obj;
                 this._resetSubscriptions();
-                this._updateRendering(null);
+                this._updateRendering();
                 
                 this._$combo.select2({
                     dataAdapter: this._queryAdapter,
@@ -256,24 +256,26 @@ require({
         },
 
         // Rerender the interface.
-        _updateRendering: function(guid) {
+        _updateRendering: function() {
             logger.debug(this.id + "._updateRendering");
 
             // Important to clear all validations!
             this._clearValidations();
 			
-			//Also update the current selection
-			if(guid && guid !== "") {
+            //Also update the current selection
+            var referencedObjectGuid = this._contextObj.get(this._reference);
+            
+            if(referencedObjectGuid !== null && referencedObjectGuid !== "") {                        
                 mx.data.get({
-                   guid: guid,
-                   callback: dojoLang.hitch(this, function(obj) {
-                        var reference = obj.get(this._reference);
-                        if (reference === null || reference === '') {
-                            this._$combo.val(null).trigger("change");
-                        }
-                   })
+                    guid: referencedObjectGuid,
+                    callback: dojoLang.hitch(this, function(obj){                             
+                        this._processResults([obj],this._formatCurrentValue, null);              
+                    })
                 });
-			}
+            }
+            else{
+                this._$combo.val(null).trigger("change");
+            }
         },			
 		
         // Handle validations.
@@ -326,7 +328,7 @@ require({
                 var objectHandle = this.subscribe({
                     guid: this._contextObj.getGuid(),
                     callback: dojoLang.hitch(this, function(guid) {
-                        this._updateRendering(guid);
+                        this._updateRendering();
                     })
                 });
 
@@ -334,7 +336,7 @@ require({
                     guid: this._contextObj.getGuid(),
                     attr: this._reference,
                     callback: dojoLang.hitch(this, function(guid, attr, attrValue) {
-                        this._updateRendering(guid);
+                        this._updateRendering();
                     })
                 });
 
