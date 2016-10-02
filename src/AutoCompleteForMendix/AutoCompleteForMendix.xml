@@ -185,6 +185,38 @@
             <category>Control Display</category>
             <description>Allow user to clear selection.</description>
         </property>
+        <property key="noResultsDisplayType" type="enumeration" defaultValue="text">
+            <caption>'No results found' display type</caption>
+            <category>No Results</category>
+            <description>The type of element to display if no results are found</description>
+            <enumerationValues>
+                <enumerationValue key="text">Text</enumerationValue>
+                <enumerationValue key="button">Button</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="noResultsText" type="translatableString" required="true">
+            <caption>'No results found' text</caption>
+            <category>No Results</category>
+            <description>The string to display if no results are found. Displayed in a label or as a button caption depending on the value selected for "'No results found' display type"</description>
+            <translations>
+                <translation lang="en_GB">No results found.</translation>
+                <translation lang="en_US">No results found.</translation>
+            </translations>
+        </property>       
+        <property key="noResultsSearchStringAttribute" type="attribute" required="false">
+            <caption>Search String Attribute</caption>
+            <category>No Results</category>
+            <description>Attribute to store search string if no results are found</description>
+            <attributeTypes>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
+        <property key="noResultsMicroflow" type="microflow" required="false">
+            <caption>No Results microflow</caption>
+            <category>No Results</category>
+            <description>Microflow to run if "'No results found' display type" is Button, and the button is clicked</description>
+            <returnType type="Void"/>
+        </property>
         <property key="placeholderText" type="translatableString" required="false">
             <caption>Placeholder text</caption>
             <category>Strings</category>
@@ -201,15 +233,6 @@
             <translations>
                 <translation lang="en_GB">Please enter at least ${minLength} characters. (${remainLength} more to go!)</translation>
                 <translation lang="en_US">Please enter at least ${minLength} characters. (${remainLength} more to go!)</translation>
-            </translations>
-        </property>
-        <property key="noResultsText" type="translatableString" required="true">
-            <caption>'No results found' text</caption>
-            <category>Strings</category>
-            <description>The string to display if no results are found.</description>
-            <translations>
-                <translation lang="en_GB">No results found.</translation>
-                <translation lang="en_US">No results found.</translation>
             </translations>
         </property>
         <property key="searchingText" type="translatableString" required="true">

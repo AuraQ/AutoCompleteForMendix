@@ -70,6 +70,7 @@ require({
         _displayTemplate: "",
         _selectedTemplate: "",
         variableData : [],
+        _currentSearchTerm : "",
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -177,11 +178,29 @@ require({
                             return message;
                         },
                         noResults: function(){
-                            return self.noResultsText;
+                            var retval = self.noResultsText;
+
+                            if(self.noResultsDisplayType === "button" && self.noResultsMicroflow){                                
+                                retval = dojoConstruct.create("a",{
+                                    href:"#",
+                                    innerHTML: self.noResultsText,
+                                    'class':"btn btn-block btn-noResults",
+                                    onclick:function(){
+                                        self._contextObj.set(self.noResultsSearchStringAttribute, self._currentSearchTerm);
+                                        self._execMf(self._contextObj.getGuid(), self.noResultsMicroflow);
+                                        self._$combo.select2("close");
+                                    }
+                                });
+                            }
+
+                            return retval;
                         },
                         searching: function(){
                             return self.searchingText;
                         }
+                    },
+                    escapeMarkup: function(markup){
+                        return markup;
                     },
                     templateResult : function (item) {
                         if(!item.id) {
@@ -399,6 +418,7 @@ require({
             function request () {                                                
                 var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
                 var method = self.searchMethod == "startswith" ? "starts-with" : self.searchMethod;
+                self._currentSearchTerm = params.term;
                 var term = params.term.replace(/'/g, "''");
                 var searchConstraint = "[" + method + "(" + self.searchAttribute + ",'" + term + "')";    
                 if (method == "starts-with") {

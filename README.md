@@ -21,7 +21,7 @@ Where you have a large number of available options for a reference selector, use
 
 ## Search
 - **Select Source**: The reference association, starting from the dataview object.
-- **Search attribute**: The attribute to search against.
+- **Search Attribute**: The attribute to search against.
 - **Data constraint**: An XPath constraint, further filtering the available objects that are displayed in the dropdown.
 - **Constrained by [Context]**: Select an association from the data view context if you want the results to be constrained by a particular object. Must be used alongside 'Constrained by [Source]' 
 - **Constrained by [Source]**:Select an association from the AutoComplete's source entity if you want the results to be constrained by a particular object. Must be used alongside 'Constrained by [Context]'
@@ -32,18 +32,24 @@ Where you have a large number of available options for a reference selector, use
 - **Selected Template**: The template (treated as Plain Text) to use for a selected item. 
 - **Result Template**: The template (treated as HTML) to use for a search result in the dropdown. If left empty the 'Selected Template' property will be used. This value is wrapped in a div element with a class of 'autoCompleteResult' 
 - **Template Attributes**: The mapping of attributes to variable names for replacement in 'Selected Template' and 'Result Template'.
-- **Sort Order**: The attributes that the results should be sorted by.
+- **Sort order**: The attributes that the results should be sorted by.
 
-## Display
+## Control Display
 - **Show Label**: Whether a label should be displayed for the dropdown.
 - **Label Caption**: The text to be displayed in the label (only used if Show Label is set to Yes)
-- **Form Orientation**: 'Horizontal' or 'Vertical' (should match the DataView's Form Orientation value)
-- **Label Width**: A value between 1 and 11 that determines the width of the label. Will be reset to 1 or 11 if a value is selected that is outside these bounds. (only used if Show Label is set to Yes and Form Orientation is set to Horizontal)
+- **Form orientation**: 'Horizontal' or 'Vertical' (should match the DataView's Form Orientation value)
+- **Label Width (weight)**: A value between 1 and 11 that determines the width of the label. Will be reset to 1 or 11 if a value is selected that is outside these bounds. (only used if Show Label is set to Yes and Form Orientation is set to Horizontal)
+- **Allow Clear**: Whether the user can clear a selected item or not
+
+## No Results
+- **'No results found' display type:** The type of element to display if no results are found. Either Text or Button
+- **'No results found' text:** The text to be shown in the dropdown when a search returns no results.
+- **Search String Attribute:** The attribute in the context object to store the search term (only populated if no results are found).
+- **No Results microflow:** The microflow to run if the no results button is clicked (only used if no results type is Button)
 
 ## Strings
 - **Placeholder text:** The text to be shown in the dropdown when no item has been selected.
 - **'Input too short' text**: The string to display if the minimum input length has not been reached. Value can make use of tokens ${minLength} for minimum length setting and ${remainLength} for the number of characters remaining before the search executes
-- **'No results found' text:** The text to be shown in the dropdown when a search returns no results.
 - **'Searching' text:** The text to displaying while a search is executing.
 
 ## Events
