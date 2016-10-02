@@ -4,7 +4,7 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 2.0.1
+    @version   : 2.1.0
     @author    : Iain Lindsay
     @date      : 2016-04-12
     @copyright : AuraQ Limited 2016
@@ -63,6 +63,9 @@ require({
         _queryAdapter : null,
         _entity: null,  
         _reference: null,
+        _constrainedByAssociation: null,
+        _constrainedByReference: null,
+        _constrainedBySourceReference: null,
         _attributeList: null,
         _displayTemplate: "",
         _selectedTemplate: "",
@@ -88,6 +91,9 @@ require({
             
             this._entity = this.dataAssociation.split('/')[1];
             this._reference = this.dataAssociation.split('/')[0];
+            this._constrainedByAssociation = this.constrainedByAssociation;
+            this._constrainedByReference = this.constrainedByAssociation.split('/')[0];
+            this._constrainedByAssociationSource = this.constrainedByAssociationSource;
             this._attributeList = this._variableContainer;
             this._displayTemplate = this.displayTemplate;
             this._selectedTemplate = this.selectedTemplate;
@@ -401,6 +407,18 @@ require({
                 searchConstraint += "]";
         
                 xpath += searchConstraint;
+
+                if( self._constrainedByReference && self._constrainedByAssociationSource ){
+                    var constrainedByReferencedObjectGuid = self._contextObj.get(self._constrainedByReference);
+
+                    if( constrainedByReferencedObjectGuid ){
+                        var constrainedBy = "[" + self._constrainedByAssociationSource + "[id='" + constrainedByReferencedObjectGuid + "']]";
+                        xpath += constrainedBy;
+                    }
+                    else{
+                        xpath += "[true()=false()]";
+                    }
+                }
                 
                 mx.data.get({
                     xpath: xpath,
