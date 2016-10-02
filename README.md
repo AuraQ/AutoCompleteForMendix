@@ -23,6 +23,8 @@ Where you have a large number of available options for a reference selector, use
 - **Select Source**: The reference association, starting from the dataview object.
 - **Search attribute**: The attribute to search against.
 - **Data constraint**: An XPath constraint, further filtering the available objects that are displayed in the dropdown.
+- **Constrained by [Context]**: Select an association from the data view context if you want the results to be constrained by a particular object. Must be used alongside 'Constrained by [Source]' 
+- **Constrained by [Source]**:Select an association from the AutoComplete's source entity if you want the results to be constrained by a particular object. Must be used alongside 'Constrained by [Context]'
 - **Minimum Input Length**: The minimum number of characters the user has to enter before search executes.
 - **Search Method**: 'starts-with' or 'contains'; controls how the attribute is searched
 
