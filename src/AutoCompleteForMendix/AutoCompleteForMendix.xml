@@ -8,14 +8,43 @@
     </icon>
 
     <properties>
+		<property key="searchType" type="enumeration" defaultValue="xpath">
+            <caption>Search type</caption>
+            <category>Search</category>
+            <description>Search method used for showing suggestions</description>
+            <enumerationValues>
+                <enumerationValue key="microflow">Microflow</enumerationValue>
+                <enumerationValue key="xpath">XPath</enumerationValue>
+            </enumerationValues>
+        </property>
+		<property key="searchMicroflow" type="microflow" required="false">
+            <caption>Search microflow</caption>
+            <category>Microflow</category>
+            <description>This microflow runs when the selector needs to find possible results</description>
+            <returnType type="Void"/>
+        </property>
+		<property key="searchTextAttribute" type="attribute" required="false">
+            <caption>Search Text Attribute</caption>
+            <category>Microflow</category>
+            <description>Attribute on the context object that can be used to pass the search string to a microflow</description>
+            <attributeTypes>
+                <!--<attributeType name="AutoNumber"/>--> <!--TODO!-->
+                <!--<attributeType name="Currency"/>--> <!--TODO!-->
+                <!--<attributeType name="Enum"/>--> <!--TODO!-->
+                <!--<attributeType name="Float"/>--> <!--TODO!-->
+                <!--<attributeType name="Integer"/>--> <!--TODO!-->
+                <!--<attributeType name="Long"/>--> <!--TODO!-->
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
         <property key="dataAssociation" type="entity" required="true" isPath="yes" pathType="reference">
             <caption>Select Source</caption>
-            <category>Search</category>
-            <description>Select the entity to search/select from. This property defines the reference between the context object and the selectable object. </description> 
-        </property>        
+            <category>XPath</category>
+            <description>Select the entity to search/select from. This property defines the reference between the context object and the selectable object. </description>
+        </property>
         <property key="searchAttribute" type="attribute" required="true" entityProperty="dataAssociation">
             <caption>Search Attribute</caption>
-            <category>Search</category>
+            <category>XPath</category>
             <description>Attribute to search on</description>
             <attributeTypes>
                 <!--<attributeType name="AutoNumber"/>--> <!--TODO!-->
@@ -29,23 +58,23 @@
         </property>
         <property key="dataConstraint" type="entityConstraint" required="false" entityProperty="dataAssociation">
             <caption>Data constraint</caption>
-            <category>Search</category>
+            <category>XPath</category>
             <description>Optional constraint to filter the searchable objects</description>
-        </property>  
+        </property>
         <property key="minimumInputLength" type="integer" required="true" defaultValue="3">
             <caption>Minimum Input Length</caption>
-            <category>Search</category>
+            <category>XPath</category>
             <description>The minimum number of characters to be entered before the search executes</description>
         </property>
         <property key="searchMethod" type="enumeration" defaultValue="startswith">
             <caption>Search method</caption>
-            <category>Search</category>
+            <category>XPath</category>
             <description>Search method used for showing suggestions</description>
             <enumerationValues>
                 <enumerationValue key="startswith">starts-with</enumerationValue>
                 <enumerationValue key="contains">contains</enumerationValue>
             </enumerationValues>
-        </property>  
+        </property>
         <property key="selectedTemplate" type="translatableString" required="true" multiline="false">
             <caption>Selected Template</caption>
             <category>Result display</category>
@@ -113,7 +142,7 @@
                     <description>Displays a numeric value with group digits</description>
                 </property>
             </properties>
-        </property>  
+        </property>
         <property key="_sortContainer" type="object" isList="true" required="false">
             <caption>Sort order</caption>
             <category>Result display</category>
@@ -150,7 +179,7 @@
             <caption>Show Label</caption>
             <category>Control Display</category>
             <description>Show a label for the field.</description>
-        </property>  
+        </property>
         <property key="fieldCaption" type="translatableString" required="false" multiline="false">
             <caption>Label Caption</caption>
             <category>Control Display</category>
@@ -219,4 +248,3 @@
         </property>
     </properties>
 </widget>
-
