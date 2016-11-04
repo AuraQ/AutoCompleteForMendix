@@ -4,7 +4,7 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 2.1.0
+    @version   : 2.1.1
     @author    : Iain Lindsay
     @date      : 2016-04-12
     @copyright : AuraQ Limited 2016
@@ -415,11 +415,13 @@ require({
         
         _findMatches : function findMatches(params, callback) {
             var self = this;
+            
             function request () {                                                
                 var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
                 var method = self.searchMethod == "startswith" ? "starts-with" : self.searchMethod;
                 self._currentSearchTerm = params.term;
                 var term = params.term.replace(/'/g, "''");
+                
                 var searchConstraint = "[" + method + "(" + self.searchAttribute + ",'" + term + "')";    
                 if (method == "starts-with") {
                     searchConstraint += " or " + self.searchAttribute + "='" + term + "'";    
@@ -447,12 +449,16 @@ require({
                         offset: 0
                     },
                     callback: dojoLang.hitch(self, function(objs){
-                        var results = self._processResults(objs, self._formatResults, callback);
+                        // only process the results if our search term hasn't changed since the query was executed
+                        if( self._currentSearchTerm == params.term ){
+                            var results = self._processResults(objs, self._formatResults, callback);
+                        }
                     })
                 });
             }
             
             request();
+
         },
         
         _processResults : function (objs, formatResultsFunction, callback) {
