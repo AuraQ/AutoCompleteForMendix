@@ -4,9 +4,9 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 2.1.1
+    @version   : 2.1.0
     @author    : Iain Lindsay
-    @date      : 2016-04-12
+    @date      : 2016-11-04
     @copyright : AuraQ Limited 2016
     @license   : Apache V2
 
@@ -77,6 +77,7 @@ require({
         _contextObj: null,
         _$alertdiv: null,
         _alertDiv: null,
+		_hadValidationFeedback: false,
 
         // dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
         constructor: function() {
@@ -316,9 +317,20 @@ require({
             } else {
                 if (message) {
                     this._addValidation(message);
-                    validation.removeAttribute(this._reference);
+
+                    if(!this._hadValidationFeedback) {
+					    this._hadValidationFeedback = true;
+					    this._increaseValidationNotification();
+				    }
+
+                    validation.removeAttribute(this._reference);                    
                 }
             }
+
+			if(this._hadValidationFeedback && !message) {
+				this._decreaseValidationNotification();
+				this._hadValidationFeedback = false;
+			}
         },
 
         // Clear validations.
@@ -336,6 +348,24 @@ require({
             this._$alertdiv = $("<div></div>").addClass('alert alert-danger mx-validation-message').html(message);
             this._$combo.parent().addClass('has-error').append( this._$alertdiv );   
         },
+
+
+		_increaseValidationNotification : function() {
+			//increase notifications in case the widget is inside tab
+			//Warning: This is not documented in official API and might break when the API changes. 
+			if (this.validator) {
+				this.validator.addNotification();
+
+			}
+		},
+
+		_decreaseValidationNotification : function() {
+			//decrease notifications in case the widget is inside tab
+			//Warning: This is not documented in official API and might break when the API changes. 
+			if (this.validator) {
+				this.validator.removeNotification();
+			}
+		},
 
         // Reset subscriptions.
         _resetSubscriptions: function() {
