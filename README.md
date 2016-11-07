@@ -13,6 +13,7 @@ Where you have a large number of available options for a reference selector, use
 # Features
 
 - Supports templates for results, allowing you to combine multiple attributes for display.
+- Search using a microflow or an XPath query.
 - Control the minimum number of characters user has to input before search executes.
 - Configure the message displayed to a user when further input is required.
 - Control whether a selected item can be cleared.
@@ -21,12 +22,19 @@ Where you have a large number of available options for a reference selector, use
 
 ## Search
 - **Select Source**: The reference association, starting from the dataview object.
+- **Minimum Input Length**: The minimum number of characters the user has to enter before search executes.
+- **Search Method**: 'starts-with' or 'contains'; controls how the attribute is searched
+- **Search Type**: 'XPath' or 'Microflow'; controls whether the search should use an XPath query or a Microflow
+
+## Search (XPath)
 - **Search Attribute**: The attribute to search against.
 - **Data constraint**: An XPath constraint, further filtering the available objects that are displayed in the dropdown.
 - **Constrained by [Context]**: Select an association from the data view context if you want the results to be constrained by a particular object. Must be used alongside 'Constrained by [Source]' 
 - **Constrained by [Source]**:Select an association from the AutoComplete's source entity if you want the results to be constrained by a particular object. Must be used alongside 'Constrained by [Context]'
-- **Minimum Input Length**: The minimum number of characters the user has to enter before search executes.
-- **Search Method**: 'starts-with' or 'contains'; controls how the attribute is searched
+
+## Search (Microflow)
+- **Search microflow:** The microflow to run to execute the search. Input parameter must match the context object and return type should be a list of source objects.
+- **Search String Attribute:** The attribute in the context object to store the search term.
 
 ## Result Display
 - **Selected Template**: The template (treated as Plain Text) to use for a selected item. 
@@ -42,10 +50,10 @@ Where you have a large number of available options for a reference selector, use
 - **Allow Clear**: Whether the user can clear a selected item or not
 
 ## No Results
-- **'No results found' display type:** The type of element to display if no results are found. Either Text or Button
 - **'No results found' text:** The text to be shown in the dropdown when a search returns no results.
-- **Search String Attribute:** The attribute in the context object to store the search term (only populated if no results are found).
+- **'No results found' display type:** The type of element to display if no results are found. Either Text or Button
 - **No Results microflow:** The microflow to run if the no results button is clicked (only used if no results type is Button)
+- **Search String Attribute:** The attribute in the context object to store the search term (only populated if no results are found).
 
 ## Strings
 - **Placeholder text:** The text to be shown in the dropdown when no item has been selected.
