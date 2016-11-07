@@ -58,6 +58,7 @@ require({
         templateString: widgetTemplate,
                
         _$combo: null,
+        _isValid : true,
         _displayAttributes : [],
         _sortParams : [],
         _queryAdapter : null,
@@ -111,6 +112,9 @@ require({
             // make sure we only select the control for the current id or we'll overwrite previous instances
             var selector = '#' + this.id + ' select.autoComplete';
             this._$combo = $(selector); 
+
+            // validate the widget        
+            this._isValid = this._validateWidget();
             
             // adjust the template based on the display settings.
             if( this.showLabel ) {
@@ -144,7 +148,7 @@ require({
             logger.debug(this.id + ".update");
             var self = this;
             
-            if (obj === null) {
+            if (obj === null || !this._isValid) {
                 if (!dojoClass.contains(this.domNode, 'hidden')) {
                     dojoClass.add(this.domNode, 'hidden');
                 }
@@ -274,6 +278,38 @@ require({
             if (typeof document.ontouchstart !== "undefined") {
                 dojoEvent.stop(e);
             }
+        },
+
+        // Attach events to HTML dom elements
+        _validateWidget: function() {
+            logger.debug(this.id + "._validateWidget");
+            var valid = true;
+
+            switch( this.searchType){
+                case "xpath":
+                    if(!this.searchAttribute){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Attribute' must be specified with search type XPath.");
+                    }
+                    break;
+                case "microflow":
+                    if(!this.searchMicroflow){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow.");
+                    }
+
+                    if(!this.searchStringAttribute){
+                        valid = false;
+                        logger.error(this.id + ": 'Search String Attribute' must be specified with search type Microflow.");
+                    }
+                    break;
+                default:
+                    valid = false;
+                    logger.error(this.id + ": Search type '" + this.searchType + "' not valid.");
+                    break;
+            }
+
+            return valid;
         },
 
         // Attach events to HTML dom elements
@@ -446,49 +482,59 @@ require({
         _findMatches : function findMatches(params, callback) {
             var self = this;
             
-            function request () {                                                
-                var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
-                var method = self.searchMethod == "startswith" ? "starts-with" : self.searchMethod;
+            function request () {       
+
                 self._currentSearchTerm = params.term;
-                var term = params.term.replace(/'/g, "''");
-                
-                var searchConstraint = "[" + method + "(" + self.searchAttribute + ",'" + term + "')";    
-                if (method == "starts-with") {
-                    searchConstraint += " or " + self.searchAttribute + "='" + term + "'";    
-                }
-                searchConstraint += "]";
-        
-                xpath += searchConstraint;
 
-                if( self._constrainedByReference && self._constrainedByAssociationSource ){
-                    var constrainedByReferencedObjectGuid = self._contextObj.get(self._constrainedByReference);
-
-                    if( constrainedByReferencedObjectGuid ){
-                        var constrainedBy = "[" + self._constrainedByAssociationSource + "[id='" + constrainedByReferencedObjectGuid + "']]";
-                        xpath += constrainedBy;
-                    }
-                    else{
-                        xpath += "[true()=false()]";
-                    }
-                }
-                
-                mx.data.get({
-                    xpath: xpath,
-                    filter: {
-                        sort: self._sortParams,
-                        offset: 0
-                    },
-                    callback: dojoLang.hitch(self, function(objs){
+                var searchCallback = 
+                    dojoLang.hitch(self, function(objs){
                         // only process the results if our search term hasn't changed since the query was executed
                         if( self._currentSearchTerm == params.term ){
                             var results = self._processResults(objs, self._formatResults, callback);
                         }
-                    })
-                });
+                    });
+
+                if( self.searchType === "xpath"){
+                    var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
+                    var method = self.searchMethod == "startswith" ? "starts-with" : self.searchMethod;
+                    var term = params.term.replace(/'/g, "''");
+                    
+                    var searchConstraint = "[" + method + "(" + self.searchAttribute + ",'" + term + "')";    
+                    if (method == "starts-with") {
+                        searchConstraint += " or " + self.searchAttribute + "='" + term + "'";    
+                    }
+                    searchConstraint += "]";
+            
+                    xpath += searchConstraint;
+
+                    if( self._constrainedByReference && self._constrainedByAssociationSource ){
+                        var constrainedByReferencedObjectGuid = self._contextObj.get(self._constrainedByReference);
+
+                        if( constrainedByReferencedObjectGuid ){
+                            var constrainedBy = "[" + self._constrainedByAssociationSource + "[id='" + constrainedByReferencedObjectGuid + "']]";
+                            xpath += constrainedBy;
+                        }
+                        else{
+                            xpath += "[true()=false()]";
+                        }
+                    }
+                    
+                    mx.data.get({
+                        xpath: xpath,
+                        filter: {
+                            sort: self._sortParams,
+                            offset: 0
+                        },
+                        callback: searchCallback
+                    });
+                }
+                else{
+                    self._contextObj.set(self.searchStringAttribute, self._currentSearchTerm);
+                    self._execMf(self._contextObj.getGuid(), self.searchMicroflow, searchCallback);
+                }                
             }
             
             request();
-
         },
         
         _processResults : function (objs, formatResultsFunction, callback) {
@@ -589,7 +635,7 @@ require({
                     })
                 });
             } else{                
-                if (callback && typeof callback === "function") {                
+                if (callback && typeof callback === "function") {
                     callback();
                 }
             };
@@ -756,9 +802,9 @@ require({
                         actionname: mf,
                         guids: [guid]
                     },
-                    callback: function () {
+                    callback: function (objs) {
                         if (cb) {
-                            cb();
+                            cb(objs);
                         }
                     },
                     error: function (e) {
