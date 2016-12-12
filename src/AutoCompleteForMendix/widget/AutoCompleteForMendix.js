@@ -600,8 +600,8 @@ require({
             
             for(var i = 0;i< this.variableData.length; i++){
                 resultDisplay = this._mergeTemplate(this.variableData[i].variables, resultTemplate, false);
-                var div = dom.div({
-                    "class": "autoCompleteResult"
+                var div = dom.create("div",{
+                    "class" : "autoCompleteResult"
                 });
                 div.innerHTML = resultDisplay;
                 selectedDisplay = this._mergeTemplate(this.variableData[i].variables, this._selectedTemplate, true);
