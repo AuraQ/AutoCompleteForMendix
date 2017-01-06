@@ -6,8 +6,8 @@
     @file      : AutoCompleteForMendix.js
     @version   : 2.1.1
     @author    : Iain Lindsay
-    @date      : 2016-11-04
-    @copyright : AuraQ Limited 2016
+    @date      : 2017-01-06
+    @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
     Documentation
