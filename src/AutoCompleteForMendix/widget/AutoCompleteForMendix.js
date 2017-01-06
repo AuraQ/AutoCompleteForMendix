@@ -4,7 +4,7 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 2.1.0
+    @version   : 2.1.1
     @author    : Iain Lindsay
     @date      : 2016-11-04
     @copyright : AuraQ Limited 2016
