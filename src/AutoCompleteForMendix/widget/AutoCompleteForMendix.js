@@ -6,7 +6,7 @@
     @file      : AutoCompleteForMendix.js
     @version   : 3.0.0-alpha
     @author    : Iain Lindsay
-    @date      : 2017-01-06
+    @date      : 2017-02-07
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -329,10 +329,24 @@ define( [
         // Rerender the interface.
         _updateRendering: function() {
             logger.debug(this.id + "._updateRendering");
+            var self = this;
 
             // Important to clear all validations!
             this._clearValidations();
 			
+            if( this.searchType === "microflowCache"){
+                // update our local cache of objects
+                this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
+                    self._localObjectCache = objs;
+                    self._updateCurrentSelection();
+                });
+            }
+            else{
+                this._updateCurrentSelection();
+            }
+        },	
+
+        _updateCurrentSelection : function(){
             //Also update the current selection
             var referencedObjectGuid = this._contextObj.get(this._reference);
             
@@ -347,7 +361,7 @@ define( [
             else{
                 this._$combo.val(null).trigger("change");
             }
-        },			
+        },	
 		
         // Handle validations.
         _handleValidation: function(validations) {
