@@ -8,6 +8,7 @@
     </icon>
 
     <properties>
+        <!-- COMMON SEARCH PROPERTIES-->
         <property key="dataAssociation" type="entity" required="true" isPath="yes" pathType="reference">
             <caption>Select Source</caption>
             <category>Search</category>
@@ -17,68 +18,90 @@
             <caption>Minimum Input Length</caption>
             <category>Search</category>
             <description>The minimum number of characters to be entered before the search executes</description>
-        </property>
-        <property key="searchMethod" type="enumeration" defaultValue="startswith">
-            <caption>Search method</caption>
+        </property>  
+        <property key="searchType" type="enumeration" defaultValue="xpath">
+            <caption>Search type</caption>
             <category>Search</category>
+            <description>What type of search is used.</description>
+            <enumerationValues>
+                <enumerationValue key="xpath">XPath</enumerationValue>
+                <enumerationValue key="microflow">Microflow</enumerationValue>
+                <enumerationValue key="microflowCache">Microflow (Cached)</enumerationValue>
+            </enumerationValues>
+        </property>
+        <!-- XPATH SEARCH PROPERTIES-->
+        <property key="xpathSearchMethod" type="enumeration" defaultValue="startswith">
+            <caption>Search method</caption>
+            <category>Search - XPath</category>
             <description>Search method used for showing suggestions</description>
             <enumerationValues>
                 <enumerationValue key="startswith">starts-with</enumerationValue>
                 <enumerationValue key="contains">contains</enumerationValue>
             </enumerationValues>
-        </property>  
-        <property key="searchType" type="enumeration" defaultValue="xpath">
-            <caption>Search type</caption>
-            <category>Search</category>
-            <description>Whether to search using XPath or Microflow</description>
-            <enumerationValues>
-                <enumerationValue key="xpath">XPath</enumerationValue>
-                <enumerationValue key="microflow">Microflow</enumerationValue>
-            </enumerationValues>
         </property>
-        <property key="searchAttribute" type="attribute" required="false" entityProperty="dataAssociation">
-            <caption>Search Attribute</caption>
-            <category>Search (XPath)</category>
+        <property key="xpathSearchAttribute" type="attribute" required="false" entityProperty="dataAssociation">
+            <caption>Search attribute</caption>
+            <category>Search - XPath</category>
             <description>Attribute to search on</description>
             <attributeTypes>
-                <!--<attributeType name="AutoNumber"/>--> <!--TODO!-->
-                <!--<attributeType name="Currency"/>--> <!--TODO!-->
-                <!--<attributeType name="Enum"/>--> <!--TODO!-->
-                <!--<attributeType name="Float"/>--> <!--TODO!-->
-                <!--<attributeType name="Integer"/>--> <!--TODO!-->
-                <!--<attributeType name="Long"/>--> <!--TODO!-->
                 <attributeType name="String"/>
             </attributeTypes>
         </property>
         <property key="dataConstraint" type="entityConstraint" required="false" entityProperty="dataAssociation">
             <caption>Data constraint</caption>
-            <category>Search (XPath)</category>
+            <category>Search - XPath</category>
             <description>Optional constraint to filter the searchable objects</description>
         </property>  
         <property key="constrainedByAssociation" type="entity" required="false" isPath="yes" pathType="reference">
             <caption>Constrained by [Context]</caption>
-            <category>Search (XPath)</category>
+            <category>Search - XPath</category>
             <description>Select the association from the context entity that the objects should be constrained by</description> 
         </property>  
         <property key="constrainedByAssociationSource" type="entity" required="false" isPath="yes" pathType="reference" entityProperty="dataAssociation">
             <caption>Constrained by [Source]</caption>
-            <category>Search (XPath)</category>
+            <category>Search - XPath</category>
             <description>Select the association from the source entity that the objects should be constrained by</description> 
         </property>
+        <!-- MICROFLOW SEARCH PROPERTIES-->
         <property key="searchMicroflow" type="microflow" required="false">
             <caption>Search microflow</caption>
-            <category>Search (Microflow)</category>
+            <category>Search - Microflow</category>
             <description>Run this microflow to execute the search</description>
             <returnType type="Object" isList="true" entityProperty="dataAssociation"/>
         </property>
         <property key="searchStringAttribute" type="attribute" required="false">
             <caption>Search String Attribute</caption>
-            <category>Search (Microflow)</category>
+            <category>Search - Microflow</category>
             <description>Attribute to store the search term while searching via a microflow</description>
             <attributeTypes>
                 <attributeType name="String"/>
             </attributeTypes>
         </property>
+        <!-- MICROFLOW (CACHED) SEARCH PROPERTIES-->
+        <property key="cacheSearchMicroflow" type="microflow" required="false">
+            <caption>Search microflow </caption>
+            <category>Search - Microflow (Cached)</category>
+            <description>Run this microflow to execute the search</description>
+            <returnType type="Object" isList="true" entityProperty="dataAssociation"/>
+        </property>
+        <property key="cacheSearchMethod" type="enumeration" defaultValue="startswith">
+            <caption>Search method </caption>
+            <category>Search - Microflow (Cached)</category>
+            <description>Search method used for showing suggestions</description>
+            <enumerationValues>
+                <enumerationValue key="startswith">starts-with</enumerationValue>
+                <enumerationValue key="contains">contains</enumerationValue>
+            </enumerationValues>
+        </property>
+        <property key="cacheSearchAttribute" type="attribute" required="false" entityProperty="dataAssociation">
+            <caption>Search attribute </caption>
+            <category>Search - Microflow (Cached)</category>
+            <description>Attribute to search on</description>
+            <attributeTypes>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
+        <!-- RESULT DISPLAY PROPERTIES-->
         <property key="selectedTemplate" type="translatableString" required="true" multiline="false">
             <caption>Selected Template</caption>
             <category>Result display</category>
@@ -179,6 +202,7 @@
                 </property>
             </properties>
         </property>
+        <!-- CONTROL DISPLAY PROPERTIES-->
         <property key="showLabel" type="boolean" defaultValue="true">
             <caption>Show Label</caption>
             <category>Control Display</category>
@@ -208,6 +232,7 @@
             <category>Control Display</category>
             <description>Allow user to clear selection.</description>
         </property>
+        <!-- NO RESULT HANDLING PROPERTIES-->
         <property key="noResultsDisplayType" type="enumeration" defaultValue="text">
             <caption>'No results found' display type</caption>
             <category>No Results</category>
@@ -240,6 +265,7 @@
             <description>Microflow to run if "'No results found' display type" is Button, and the button is clicked</description>
             <returnType type="Void"/>
         </property>
+        <!-- STRINGS-->
         <property key="placeholderText" type="translatableString" required="false">
             <caption>Placeholder text</caption>
             <category>Strings</category>
@@ -267,6 +293,7 @@
                 <translation lang="en_US">Searching...</translation>
             </translations>
         </property>
+        <!-- EVENTS-->
         <property key="onChangeMicroflow" type="microflow" required="false">
             <caption>On change</caption>
             <category>Events</category>
