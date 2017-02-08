@@ -62,6 +62,7 @@ define( [
         _selectedTemplate: "",
         variableData : [],
         _currentSearchTerm : "",
+        _localObjectCache: null,
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -129,8 +130,6 @@ define( [
             } 
             
             this._initialiseQueryAdapter();
-            
-            this._setupEvents();
         },
 
         // mxui.widget._WidgetBase.update is called when context is changed or initialized. Implement to re-render and / or fetch data.
@@ -153,8 +152,99 @@ define( [
                 this._contextObj = obj;
                 this._resetSubscriptions();
                 this._updateRendering();
-                
-                this._$combo.select2({
+
+                if( this.searchType === "microflowCache"){
+                    // execute our search MF and then initialise the combo when we return
+                    this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
+                        self._localObjectCache = objs;
+                        self._initialiseControl(callback);
+                    });
+                }
+                else{
+                    this._initialiseControl(callback);
+                }
+            }
+        },
+
+        // mxui.widget._WidgetBase.enable is called when the widget should enable editing. Implement to enable editing if widget is input widget.
+        enable: function() {
+          logger.debug(this.id + ".enable");
+        },
+
+        // mxui.widget._WidgetBase.enable is called when the widget should disable editing. Implement to disable editing if widget is input widget.
+        disable: function() {
+          logger.debug(this.id + ".disable");
+        },
+
+        // mxui.widget._WidgetBase.resize is called when the page's layout is recalculated. Implement to do sizing calculations. Prefer using CSS instead.
+        resize: function(box) {
+          logger.debug(this.id + ".resize");
+        },
+
+        // mxui.widget._WidgetBase.uninitialize is called when the widget is destroyed. Implement to do special tear-down work.
+        uninitialize: function() {
+          logger.debug(this.id + ".uninitialize");
+          this._displayAttributes = [];
+          this._sortParams = [];
+          this._queryAdapter = null;
+          this._$combo.select2("destroy");
+          
+            // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
+        },
+
+        // We want to stop events on a mobile device
+        _stopBubblingEventOnMobile: function(e) {
+            logger.debug(this.id + "._stopBubblingEventOnMobile");
+            if (typeof document.ontouchstart !== "undefined") {
+                dojoEvent.stop(e);
+            }
+        },
+
+        // Attach events to HTML dom elements
+        _validateWidget: function() {
+            logger.debug(this.id + "._validateWidget");
+            var valid = true;
+
+            switch( this.searchType){
+                case "xpath":
+                    if(!this.xpathSearchAttribute){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Attribute' must be specified with search type XPath.");
+                    }
+                    break;
+                case "microflow":
+                    if(!this.searchMicroflow){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow.");
+                    }
+
+                    if(!this.searchStringAttribute){
+                        valid = false;
+                        logger.error(this.id + ": 'Search String Attribute' must be specified with search type Microflow ");
+                    }
+                    break;
+                case "microflowCache":
+                    if(!this.cacheSearchMicroflow){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow (Cached).");
+                    }
+
+                    if(!this.cacheSearchAttribute){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Attribute' must be specified with search type Microflow (Cached)");
+                    }
+                    break;
+                default:
+                    valid = false;
+                    logger.error(this.id + ": Search type '" + this.searchType + "' not valid.");
+                    break;
+            }
+
+            return valid;
+        },
+
+        _initialiseControl : function(callback){
+            this._$combo.select2({
                     dataAdapter: this._queryAdapter,
                     minimumInputLength: this.minimumInputLength,
                     width: '100%',
@@ -230,81 +320,10 @@ define( [
                         self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
                     }
                 });
-                    
+
                 // set the default value for the dropdown (if reference is already set)
                 this._loadCurrentValue(callback);
-            }
-        },
 
-        // mxui.widget._WidgetBase.enable is called when the widget should enable editing. Implement to enable editing if widget is input widget.
-        enable: function() {
-          logger.debug(this.id + ".enable");
-        },
-
-        // mxui.widget._WidgetBase.enable is called when the widget should disable editing. Implement to disable editing if widget is input widget.
-        disable: function() {
-          logger.debug(this.id + ".disable");
-        },
-
-        // mxui.widget._WidgetBase.resize is called when the page's layout is recalculated. Implement to do sizing calculations. Prefer using CSS instead.
-        resize: function(box) {
-          logger.debug(this.id + ".resize");
-        },
-
-        // mxui.widget._WidgetBase.uninitialize is called when the widget is destroyed. Implement to do special tear-down work.
-        uninitialize: function() {
-          logger.debug(this.id + ".uninitialize");
-          this._displayAttributes = [];
-          this._sortParams = [];
-          this._queryAdapter = null;
-          this._$combo.select2("destroy");
-          
-            // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
-        },
-
-        // We want to stop events on a mobile device
-        _stopBubblingEventOnMobile: function(e) {
-            logger.debug(this.id + "._stopBubblingEventOnMobile");
-            if (typeof document.ontouchstart !== "undefined") {
-                dojoEvent.stop(e);
-            }
-        },
-
-        // Attach events to HTML dom elements
-        _validateWidget: function() {
-            logger.debug(this.id + "._validateWidget");
-            var valid = true;
-
-            switch( this.searchType){
-                case "xpath":
-                    if(!this.searchAttribute){
-                        valid = false;
-                        logger.error(this.id + ": 'Search Attribute' must be specified with search type XPath.");
-                    }
-                    break;
-                case "microflow":
-                    if(!this.searchMicroflow){
-                        valid = false;
-                        logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow.");
-                    }
-
-                    if(!this.searchStringAttribute){
-                        valid = false;
-                        logger.error(this.id + ": 'Search String Attribute' must be specified with search type Microflow.");
-                    }
-                    break;
-                default:
-                    valid = false;
-                    logger.error(this.id + ": Search type '" + this.searchType + "' not valid.");
-                    break;
-            }
-
-            return valid;
-        },
-
-        // Attach events to HTML dom elements
-        _setupEvents: function() {
-            logger.debug(this.id + "._setupEvents");            
         },
 
         // Rerender the interface.
@@ -486,12 +505,12 @@ define( [
 
                 if( self.searchType === "xpath"){
                     var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
-                    var method = self.searchMethod == "startswith" ? "starts-with" : self.searchMethod;
+                    var method = self.xpathSearchMethod == "startswith" ? "starts-with" : self.xpathSearchMethod;
                     var term = params.term.replace(/'/g, "''");
                     
-                    var searchConstraint = "[" + method + "(" + self.searchAttribute + ",'" + term + "')";    
+                    var searchConstraint = "[" + method + "(" + self.xpathSearchAttribute + ",'" + term + "')";    
                     if (method == "starts-with") {
-                        searchConstraint += " or " + self.searchAttribute + "='" + term + "'";    
+                        searchConstraint += " or " + self.xpathSearchAttribute + "='" + term + "'";    
                     }
                     searchConstraint += "]";
             
@@ -518,10 +537,29 @@ define( [
                         callback: searchCallback
                     });
                 }
-                else{
+                else if(self.searchType === "microflow") {
                     self._contextObj.set(self.searchStringAttribute, self._currentSearchTerm);
-                    self._execMf(self._contextObj.getGuid(), self.searchMicroflow, searchCallback);
-                }                
+                    self._execMf(self._contextObj.getGuid(), self.searchMicroflow, searchCallback);                    
+                }   
+                else if(self.searchType === "microflowCache") {
+                    // filter my local cache and then process my results
+                    var filteredObjs = [];
+                    for( var i = 0; i < self._localObjectCache.length; i++){
+                        var attributeValue = self._localObjectCache[i].get(self.cacheSearchAttribute);
+                        if(self.cacheSearchMethod == "startswith"){
+                            if( attributeValue.toLowerCase().startsWith(self._currentSearchTerm) ){
+                                filteredObjs.push(self._localObjectCache[i]);
+                            }
+                        }
+                        else{
+                            if( attributeValue.toLowerCase().indexOf(self._currentSearchTerm) >= 0 ){
+                                filteredObjs.push(self._localObjectCache[i]);
+                            }
+                        }
+                    }
+
+                    searchCallback(filteredObjs);
+                }             
             }
             
             request();
