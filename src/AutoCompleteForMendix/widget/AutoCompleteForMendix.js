@@ -83,6 +83,14 @@ define( [
         postCreate: function() {
             logger.debug(this.id + ".postCreate");
             
+            $(document).on("touchstart", function(event){
+                $(event.target).trigger($.Event("click", {
+                    pageX: event.originalEvent.touches[0].pageX,
+                    pageY: event.originalEvent.touches[0].pageY,
+                    originalEvent: event
+                }));
+            });
+            
             this._entity = this.dataAssociation.split('/')[1];
             this._reference = this.dataAssociation.split('/')[0];
             this._constrainedByAssociation = this.constrainedByAssociation;
@@ -244,6 +252,7 @@ define( [
         },
 
         _initialiseControl : function(callback){
+            var self = this;
             this._$combo.select2({
                     dataAdapter: this._queryAdapter,
                     minimumInputLength: this.minimumInputLength,

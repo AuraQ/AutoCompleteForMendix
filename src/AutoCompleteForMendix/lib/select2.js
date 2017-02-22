@@ -1075,7 +1075,7 @@
                 return;
               }
 
-              $highlighted.trigger('mouseup');
+              $highlighted.trigger('mouseup touchend');
             });
 
             container.on('results:select', function () {
@@ -1193,7 +1193,7 @@
               });
             }
 
-            this.$results.on('mouseup', '.select2-results__option[aria-selected]',
+            this.$results.on('mouseup touchend', '.select2-results__option[aria-selected]',
               function (evt) {
               var $this = $(this);
 
@@ -1430,7 +1430,7 @@
           BaseSelection.prototype._attachCloseHandler = function (container) {
             var self = this;
 
-            $(document.body).on('mousedown.select2.' + container.id, function (e) {
+            $(document.body).on('mousedown.select2.' + container.id +' touchstart.select2.' + container.id, function (e) {
               var $target = $(e.target);
 
               var $select = $target.closest('.select2');
@@ -1452,7 +1452,7 @@
           };
 
           BaseSelection.prototype._detachCloseHandler = function (container) {
-            $(document.body).off('mousedown.select2.' + container.id);
+            $(document.body).off('mousedown.select2.' + container.id +' touchstart.select2.' + container.id);
           };
 
           BaseSelection.prototype.position = function ($selection, $container) {
@@ -1508,7 +1508,7 @@
             this.$selection.find('.select2-selection__rendered').attr('id', id);
             this.$selection.attr('aria-labelledby', id);
 
-            this.$selection.on('mousedown', function (evt) {
+            this.$selection.on('mousedown touchstart', function (evt) {
               // Only respond to left clicks
               if (evt.which !== 1) {
                 return;
@@ -1751,7 +1751,7 @@
               }
             }
 
-            this.$selection.on('mousedown', '.select2-selection__clear',
+            this.$selection.on('mousedown touchstart', '.select2-selection__clear',
               function (evt) {
                 self._handleClear(evt);
             });
@@ -4157,7 +4157,7 @@
               self._detachPositioningHandler(container);
             });
 
-            this.$dropdownContainer.on('mousedown', function (evt) {
+            this.$dropdownContainer.on('mousedown touchstart', function (evt) {
               evt.stopPropagation();
             });
           };
