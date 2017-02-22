@@ -237,6 +237,11 @@
             <category>Control Display</category>
             <description>Allow user to clear selection.</description>
         </property>
+        <property key="disabled" type="boolean" defaultValue="false">
+            <caption>Disabled</caption>
+            <category>Control Display</category>
+            <description>If true, makes the control disabled.</description>
+        </property>
         <!-- NO RESULT HANDLING PROPERTIES-->
         <property key="noResultsDisplayType" type="enumeration" defaultValue="text">
             <caption>'No results found' display type</caption>

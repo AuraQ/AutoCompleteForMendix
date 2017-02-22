@@ -330,6 +330,10 @@ define( [
                     }
                 });
 
+                if(this.disabled){
+                    this._$combo.prop('disabled',true);
+                }
+
                 // set the default value for the dropdown (if reference is already set)
                 this._loadCurrentValue(callback);
 
