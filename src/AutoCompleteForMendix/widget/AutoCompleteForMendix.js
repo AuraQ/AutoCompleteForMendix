@@ -555,7 +555,8 @@ define( [
                         xpath: xpath,
                         filter: {
                             sort: self._sortParams,
-                            offset: 0
+                            offset: 0,
+                            amount: self.maxRecords
                         },
                         callback: searchCallback
                     });
