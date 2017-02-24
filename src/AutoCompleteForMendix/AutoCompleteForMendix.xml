@@ -9,7 +9,7 @@
 
     <properties>
         <!-- COMMON SEARCH PROPERTIES-->
-        <property key="dataAssociation" type="entity" required="true" isPath="yes" pathType="reference">
+        <property key="dataAssociation" type="entity" required="true" isPath="yes" pathType="reference" allowNonPersistableEntities="true">
             <caption>Select Source</caption>
             <category>Search</category>
             <description>Select the entity to search/select from. This property defines the reference between the context object and the selectable object. </description> 

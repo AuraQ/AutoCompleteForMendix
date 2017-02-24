@@ -13,10 +13,12 @@ Where you have a large number of available options for a reference selector, use
 # Features
 
 - Supports templates for results, allowing you to combine multiple attributes for display.
-- Search using a microflow or an XPath query.
+- Search using an XPath query, a microflow that is executed for each search or a microflow that caches the result set on initialiation (and context change).
 - Control the minimum number of characters user has to input before search executes.
 - Configure the message displayed to a user when further input is required.
 - Control whether a selected item can be cleared.
+- Control the maximum number of records to return from an XPath search
+- Render the control as disabled.
 
 # Configuration
 
