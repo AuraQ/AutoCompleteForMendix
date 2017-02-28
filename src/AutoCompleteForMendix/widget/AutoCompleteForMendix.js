@@ -63,6 +63,7 @@ define( [
         variableData : [],
         _currentSearchTerm : "",
         _localObjectCache: null,
+        _updateCache : true,
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -347,12 +348,17 @@ define( [
             // Important to clear all validations!
             this._clearValidations();
 			
-            if( this.searchType === "microflowCache"){
-                // update our local cache of objects
-                this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
-                    self._localObjectCache = objs;
-                    self._updateCurrentSelection();
-                });
+            if( this.searchType === "microflowCache"  ){
+                if( this._updateCache){
+                    // update our local cache of objects
+                    this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
+                        self._localObjectCache = objs;
+                        self._updateCurrentSelection();
+                    });
+                }
+                else{
+                    this._updateCache = true;
+                }
             }
             else{
                 this._updateCurrentSelection();
@@ -463,6 +469,7 @@ define( [
                     guid: this._contextObj.getGuid(),
                     attr: this._reference,
                     callback: dojoLang.hitch(this, function(guid, attr, attrValue) {
+                        this._updateCache = false;
                         this._updateRendering();
                     })
                 });
