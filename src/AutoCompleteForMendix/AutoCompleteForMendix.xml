@@ -242,6 +242,27 @@
             <category>Control Display</category>
             <description>If true, makes the control disabled.</description>
         </property>
+        <property key="disabledViaAttribute" type="attribute" required="false">
+            <caption>Disabled via attribute</caption>
+            <category>Control Display</category>
+            <description>Optional, set's control disabled property based on attribute (true = disabled, false = enabled)</description>
+            <attributeTypes>
+                <attributeType name="Boolean"/>
+            </attributeTypes>
+        </property>
+        <property key="visible" type="boolean" defaultValue="true">
+            <caption>Visible</caption>
+            <category>Control Display</category>
+            <description>If true, makes the control visible.</description>
+        </property>
+        <property key="visibleViaAttribute" type="attribute" required="false">
+            <caption>Visible via attribute</caption>
+            <category>Control Display</category>
+            <description>Optional, set's control visibility property based on attribute (true = visible, false = hidden)</description>
+            <attributeTypes>
+                <attributeType name="Boolean"/>
+            </attributeTypes>
+        </property>
         <!-- NO RESULT HANDLING PROPERTIES-->
         <property key="noResultsDisplayType" type="enumeration" defaultValue="text">
             <caption>'No results found' display type</caption>

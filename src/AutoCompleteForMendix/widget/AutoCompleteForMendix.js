@@ -331,13 +331,52 @@ define( [
                     }
                 });
 
-                if(this.disabled){
-                    this._$combo.prop('disabled',true);
-                }
+                this._updateControlDisplay();
 
                 // set the default value for the dropdown (if reference is already set)
                 this._loadCurrentValue(callback);
 
+        },
+
+        _updateControlDisplay : function(){
+            // fixed property gets checked first
+            if(this.disabled){
+                this._$combo.prop('disabled',true);
+            } else{
+                this._$combo.prop('disabled',false);
+            }
+            // attribute property beats fixed property    
+            if(this.disabledViaAttribute){
+                if(this._contextObj.get(this.disabledViaAttribute) ){
+                    this._$combo.prop('disabled',true);
+                } else{
+                    this._$combo.prop('disabled',false);
+                }
+            } 
+
+            // fixed property gets checked first
+            if(this.visible){
+                if (dojoClass.contains(this.domNode, 'hidden')) {
+                    dojoClass.remove(this.domNode, 'hidden');
+                }
+            } else {
+                if (!dojoClass.contains(this.domNode, 'hidden')) {
+                    dojoClass.add(this.domNode, 'hidden');
+                }
+            }
+
+            // attribute property beats fixed property
+            if(this.visibleViaAttribute ){
+                if(this._contextObj.get(this.visibleViaAttribute)){
+                    if (dojoClass.contains(this.domNode, 'hidden')) {
+                        dojoClass.remove(this.domNode, 'hidden');
+                    } 
+                } else {
+                    if (!dojoClass.contains(this.domNode, 'hidden')) {
+                        dojoClass.add(this.domNode, 'hidden');
+                    }
+                }
+            }
         },
 
         // Rerender the interface.
@@ -347,6 +386,9 @@ define( [
 
             // Important to clear all validations!
             this._clearValidations();
+
+            // reset the display
+            this._updateControlDisplay();
 			
             if( this.searchType === "microflowCache"  ){
                 if( this._updateCache){
@@ -532,6 +574,8 @@ define( [
                 var searchCallback = 
                     dojoLang.hitch(self, function(objs){
                         // only process the results if our search term hasn't changed since the query was executed
+                        logger.debug("_currentSearchTerm: " + self._currentSearchTerm);
+                        logger.debug("params.term: " + params.term);
                         if( self._currentSearchTerm == params.term ){
                             var results = self._processResults(objs, self._formatResults, callback);
                         }
@@ -582,12 +626,12 @@ define( [
                     for( var i = 0; i < self._localObjectCache.length; i++){
                         var attributeValue = self._localObjectCache[i].get(self.cacheSearchAttribute);
                         if(self.cacheSearchMethod == "startswith"){
-                            if( attributeValue.toLowerCase().startsWith(self._currentSearchTerm) ){
+                            if( attributeValue.toLowerCase().startsWith(self._currentSearchTerm.toLowerCase()) ){
                                 filteredObjs.push(self._localObjectCache[i]);
                             }
                         }
                         else{
-                            if( attributeValue.toLowerCase().indexOf(self._currentSearchTerm) >= 0 ){
+                            if( attributeValue.toLowerCase().indexOf(self._currentSearchTerm.toLowerCase()) >= 0 ){
                                 filteredObjs.push(self._localObjectCache[i]);
                             }
                         }
