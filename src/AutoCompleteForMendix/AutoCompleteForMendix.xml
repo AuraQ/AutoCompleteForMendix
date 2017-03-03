@@ -106,6 +106,14 @@
                 <attributeType name="String"/>
             </attributeTypes>
         </property>
+        <property key="refreshCacheViaAttribute" type="attribute" required="false">
+            <caption>Refresh cache via attribute</caption>
+            <category>Search - Microflow (Cached)</category>
+            <description>Optional, controls whether the cache is refreshed based on an attribute (true = refresh, false = don't refresh)</description>
+            <attributeTypes>
+                <attributeType name="Boolean"/>
+            </attributeTypes>
+        </property>
         <!-- RESULT DISPLAY PROPERTIES-->
         <property key="selectedTemplate" type="translatableString" required="true" multiline="false">
             <caption>Selected Template</caption>

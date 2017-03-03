@@ -391,15 +391,20 @@ define( [
             this._updateControlDisplay();
 			
             if( this.searchType === "microflowCache"  ){
-                if( this._updateCache){
-                    // update our local cache of objects
-                    this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
-                        self._localObjectCache = objs;
-                        self._updateCurrentSelection();
-                    });
+                // this is an internal control of the refresh, which bypasses an update on attribute change
+                if( this._updateCache ){ 
+                    // this is an attribute based control of the refresh, which is governed by the app (if property is used)
+                    if(!this.refreshCacheViaAttribute || (this.refreshCacheViaAttribute && this._contextObj.get(this.refreshCacheViaAttribute) ) ){                    
+                        // update our local cache of objects
+                        this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
+                            self._localObjectCache = objs;
+                            self._updateCurrentSelection();
+                        });
+                    }
                 }
                 else{
-                    this._updateCache = true;
+                    // reset back to allow a refresh by default
+                    this._updateCache = true; 
                 }
             }
             else{
