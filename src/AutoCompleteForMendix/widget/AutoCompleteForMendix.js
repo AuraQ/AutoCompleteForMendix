@@ -4,9 +4,15 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
+<<<<<<< HEAD
     @version   : 2.1.1
     @author    : Iain Lindsay
     @date      : 2017-01-06
+=======
+    @version   : 3.0.0
+    @author    : Iain Lindsay
+    @date      : 2017-03-05
+>>>>>>> refs/remotes/origin/v3
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -16,7 +22,11 @@
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
+<<<<<<< HEAD
 define([
+=======
+define( [
+>>>>>>> refs/remotes/origin/v3
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
     "dijit/_TemplatedMixin",
@@ -27,7 +37,7 @@ define([
     "dojo/dom-class",
     "dojo/dom-style",
     "dojo/dom-construct",
-    "dojo/_base/array",
+    "dojo/_base/array", 
     "dojo/_base/lang",
     "dojo/text",
     "dojo/html",
@@ -48,6 +58,7 @@ define([
         templateString: widgetTemplate,
                
         _$combo: null,
+        _isValid : true,
         _displayAttributes : [],
         _sortParams : [],
         _queryAdapter : null,
@@ -61,6 +72,8 @@ define([
         _selectedTemplate: "",
         variableData : [],
         _currentSearchTerm : "",
+        _localObjectCache: null,
+        _updateCache : true,
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -80,6 +93,14 @@ define([
         // dijit._WidgetBase.postCreate is called after constructing the widget. Implement to do extra setup work.
         postCreate: function() {
             logger.debug(this.id + ".postCreate");
+            
+            $(document).on("touchstart", function(event){
+                $(event.target).trigger($.Event("click", {
+                    pageX: event.originalEvent.touches[0].pageX,
+                    pageY: event.originalEvent.touches[0].pageY,
+                    originalEvent: event
+                }));
+            });
             
             this._entity = this.dataAssociation.split('/')[1];
             this._reference = this.dataAssociation.split('/')[0];
@@ -101,6 +122,9 @@ define([
             // make sure we only select the control for the current id or we'll overwrite previous instances
             var selector = '#' + this.id + ' select.autoComplete';
             this._$combo = $(selector); 
+
+            // validate the widget        
+            this._isValid = this._validateWidget();
             
             // adjust the template based on the display settings.
             if( this.showLabel ) {
@@ -125,8 +149,6 @@ define([
             } 
             
             this._initialiseQueryAdapter();
-            
-            this._setupEvents();
         },
 
         // mxui.widget._WidgetBase.update is called when context is changed or initialized. Implement to re-render and / or fetch data.
@@ -134,7 +156,7 @@ define([
             logger.debug(this.id + ".update");
             var self = this;
             
-            if (obj === null) {
+            if (obj === null || !this._isValid) {
                 if (!dojoClass.contains(this.domNode, 'hidden')) {
                     dojoClass.add(this.domNode, 'hidden');
                 }
@@ -149,8 +171,100 @@ define([
                 this._contextObj = obj;
                 this._resetSubscriptions();
                 this._updateRendering();
-                
-                this._$combo.select2({
+
+                if( this.searchType === "microflowCache"){
+                    // execute our search MF and then initialise the combo when we return
+                    this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
+                        self._localObjectCache = objs;
+                        self._initialiseControl(callback);
+                    });
+                }
+                else{
+                    this._initialiseControl(callback);
+                }
+            }
+        },
+
+        // mxui.widget._WidgetBase.enable is called when the widget should enable editing. Implement to enable editing if widget is input widget.
+        enable: function() {
+          logger.debug(this.id + ".enable");
+        },
+
+        // mxui.widget._WidgetBase.enable is called when the widget should disable editing. Implement to disable editing if widget is input widget.
+        disable: function() {
+          logger.debug(this.id + ".disable");
+        },
+
+        // mxui.widget._WidgetBase.resize is called when the page's layout is recalculated. Implement to do sizing calculations. Prefer using CSS instead.
+        resize: function(box) {
+          logger.debug(this.id + ".resize");
+        },
+
+        // mxui.widget._WidgetBase.uninitialize is called when the widget is destroyed. Implement to do special tear-down work.
+        uninitialize: function() {
+          logger.debug(this.id + ".uninitialize");
+          this._displayAttributes = [];
+          this._sortParams = [];
+          this._queryAdapter = null;
+          this._$combo.select2("destroy");
+          
+            // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
+        },
+
+        // We want to stop events on a mobile device
+        _stopBubblingEventOnMobile: function(e) {
+            logger.debug(this.id + "._stopBubblingEventOnMobile");
+            if (typeof document.ontouchstart !== "undefined") {
+                dojoEvent.stop(e);
+            }
+        },
+
+        // Attach events to HTML dom elements
+        _validateWidget: function() {
+            logger.debug(this.id + "._validateWidget");
+            var valid = true;
+
+            switch( this.searchType){
+                case "xpath":
+                    if(!this.xpathSearchAttribute){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Attribute' must be specified with search type XPath.");
+                    }
+                    break;
+                case "microflow":
+                    if(!this.searchMicroflow){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow.");
+                    }
+
+                    if(!this.searchStringAttribute){
+                        valid = false;
+                        logger.error(this.id + ": 'Search String Attribute' must be specified with search type Microflow ");
+                    }
+                    break;
+                case "microflowCache":
+                    if(!this.cacheSearchMicroflow){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow (Cached).");
+                    }
+
+                    if(!this.cacheSearchAttribute){
+                        valid = false;
+                        logger.error(this.id + ": 'Search Attribute' must be specified with search type Microflow (Cached)");
+                    }
+                    break;
+                default:
+                    valid = false;
+                    logger.error(this.id + ": Search type '" + this.searchType + "' not valid.");
+                    break;
+            }
+
+            return valid;
+        },
+
+        _initialiseControl : function(callback){
+            var self = this;
+            this._$combo.select2({
                     dataAdapter: this._queryAdapter,
                     minimumInputLength: this.minimumInputLength,
                     width: '100%',
@@ -226,58 +340,89 @@ define([
                         self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
                     }
                 });
-                    
+
+                this._updateControlDisplay();
+
                 // set the default value for the dropdown (if reference is already set)
                 this._loadCurrentValue(callback);
+
+        },
+
+        _updateControlDisplay : function(){
+            // fixed property gets checked first
+            if(this.disabled){
+                this._$combo.prop('disabled',true);
+            } else{
+                this._$combo.prop('disabled',false);
             }
-        },
+            // attribute property beats fixed property    
+            if(this.disabledViaAttribute){
+                if(this._contextObj.get(this.disabledViaAttribute) ){
+                    this._$combo.prop('disabled',true);
+                } else{
+                    this._$combo.prop('disabled',false);
+                }
+            } 
 
-        // mxui.widget._WidgetBase.enable is called when the widget should enable editing. Implement to enable editing if widget is input widget.
-        enable: function() {
-          logger.debug(this.id + ".enable");
-        },
-
-        // mxui.widget._WidgetBase.enable is called when the widget should disable editing. Implement to disable editing if widget is input widget.
-        disable: function() {
-          logger.debug(this.id + ".disable");
-        },
-
-        // mxui.widget._WidgetBase.resize is called when the page's layout is recalculated. Implement to do sizing calculations. Prefer using CSS instead.
-        resize: function(box) {
-          logger.debug(this.id + ".resize");
-        },
-
-        // mxui.widget._WidgetBase.uninitialize is called when the widget is destroyed. Implement to do special tear-down work.
-        uninitialize: function() {
-          logger.debug(this.id + ".uninitialize");
-          this._displayAttributes = [];
-          this._sortParams = [];
-          this._queryAdapter = null;
-          this._$combo.select2("destroy");
-          
-            // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
-        },
-
-        // We want to stop events on a mobile device
-        _stopBubblingEventOnMobile: function(e) {
-            logger.debug(this.id + "._stopBubblingEventOnMobile");
-            if (typeof document.ontouchstart !== "undefined") {
-                dojoEvent.stop(e);
+            // fixed property gets checked first
+            if(this.visible){
+                if (dojoClass.contains(this.domNode, 'hidden')) {
+                    dojoClass.remove(this.domNode, 'hidden');
+                }
+            } else {
+                if (!dojoClass.contains(this.domNode, 'hidden')) {
+                    dojoClass.add(this.domNode, 'hidden');
+                }
             }
-        },
 
-        // Attach events to HTML dom elements
-        _setupEvents: function() {
-            logger.debug(this.id + "._setupEvents");            
+            // attribute property beats fixed property
+            if(this.visibleViaAttribute ){
+                if(this._contextObj.get(this.visibleViaAttribute)){
+                    if (dojoClass.contains(this.domNode, 'hidden')) {
+                        dojoClass.remove(this.domNode, 'hidden');
+                    } 
+                } else {
+                    if (!dojoClass.contains(this.domNode, 'hidden')) {
+                        dojoClass.add(this.domNode, 'hidden');
+                    }
+                }
+            }
         },
 
         // Rerender the interface.
         _updateRendering: function() {
             logger.debug(this.id + "._updateRendering");
+            var self = this;
 
             // Important to clear all validations!
             this._clearValidations();
+
+            // reset the display
+            this._updateControlDisplay();
 			
+            if( this.searchType === "microflowCache"  ){
+                // this is an internal control of the refresh, which bypasses an update on attribute change
+                if( this._updateCache ){ 
+                    // this is an attribute based control of the refresh, which is governed by the app (if property is used)
+                    if(!this.refreshCacheViaAttribute || (this.refreshCacheViaAttribute && this._contextObj.get(this.refreshCacheViaAttribute) ) ){                    
+                        // update our local cache of objects
+                        this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
+                            self._localObjectCache = objs;
+                            self._updateCurrentSelection();
+                        });
+                    }
+                }
+                else{
+                    // reset back to allow a refresh by default
+                    this._updateCache = true; 
+                }
+            }
+            else{
+                this._updateCurrentSelection();
+            }
+        },	
+
+        _updateCurrentSelection : function(){
             //Also update the current selection
             var referencedObjectGuid = this._contextObj.get(this._reference);
             
@@ -292,7 +437,7 @@ define([
             else{
                 this._$combo.val(null).trigger("change");
             }
-        },			
+        },	
 		
         // Handle validations.
         _handleValidation: function(validations) {
@@ -381,6 +526,7 @@ define([
                     guid: this._contextObj.getGuid(),
                     attr: this._reference,
                     callback: dojoLang.hitch(this, function(guid, attr, attrValue) {
+                        this._updateCache = false;
                         this._updateRendering();
                     })
                 });
@@ -436,49 +582,81 @@ define([
         _findMatches : function findMatches(params, callback) {
             var self = this;
             
-            function request () {                                                
-                var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
-                var method = self.searchMethod == "startswith" ? "starts-with" : self.searchMethod;
+            function request () {       
+
                 self._currentSearchTerm = params.term;
-                var term = params.term.replace(/'/g, "''");
-                
-                var searchConstraint = "[" + method + "(" + self.searchAttribute + ",'" + term + "')";    
-                if (method == "starts-with") {
-                    searchConstraint += " or " + self.searchAttribute + "='" + term + "'";    
-                }
-                searchConstraint += "]";
-        
-                xpath += searchConstraint;
 
-                if( self._constrainedByReference && self._constrainedByAssociationSource ){
-                    var constrainedByReferencedObjectGuid = self._contextObj.get(self._constrainedByReference);
-
-                    if( constrainedByReferencedObjectGuid ){
-                        var constrainedBy = "[" + self._constrainedByAssociationSource + "[id='" + constrainedByReferencedObjectGuid + "']]";
-                        xpath += constrainedBy;
-                    }
-                    else{
-                        xpath += "[true()=false()]";
-                    }
-                }
-                
-                mx.data.get({
-                    xpath: xpath,
-                    filter: {
-                        sort: self._sortParams,
-                        offset: 0
-                    },
-                    callback: dojoLang.hitch(self, function(objs){
+                var searchCallback = 
+                    dojoLang.hitch(self, function(objs){
                         // only process the results if our search term hasn't changed since the query was executed
+                        logger.debug("_currentSearchTerm: " + self._currentSearchTerm);
+                        logger.debug("params.term: " + params.term);
                         if( self._currentSearchTerm == params.term ){
                             var results = self._processResults(objs, self._formatResults, callback);
                         }
-                    })
-                });
+                    });
+
+                if( self.searchType === "xpath"){
+                    var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
+                    var method = self.xpathSearchMethod == "startswith" ? "starts-with" : self.xpathSearchMethod;
+                    var term = params.term.replace(/'/g, "''");
+                    
+                    var searchConstraint = "[" + method + "(" + self.xpathSearchAttribute + ",'" + term + "')";    
+                    if (method == "starts-with") {
+                        searchConstraint += " or " + self.xpathSearchAttribute + "='" + term + "'";    
+                    }
+                    searchConstraint += "]";
+            
+                    xpath += searchConstraint;
+
+                    if( self._constrainedByReference && self._constrainedByAssociationSource ){
+                        var constrainedByReferencedObjectGuid = self._contextObj.get(self._constrainedByReference);
+
+                        if( constrainedByReferencedObjectGuid ){
+                            var constrainedBy = "[" + self._constrainedByAssociationSource + "[id='" + constrainedByReferencedObjectGuid + "']]";
+                            xpath += constrainedBy;
+                        }
+                        else{
+                            xpath += "[true()=false()]";
+                        }
+                    }
+                    
+                    mx.data.get({
+                        xpath: xpath,
+                        filter: {
+                            sort: self._sortParams,
+                            offset: 0,
+                            amount: self.maxRecords
+                        },
+                        callback: searchCallback
+                    });
+                }
+                else if(self.searchType === "microflow") {
+                    self._contextObj.set(self.searchStringAttribute, self._currentSearchTerm);
+                    self._execMf(self._contextObj.getGuid(), self.searchMicroflow, searchCallback);                    
+                }   
+                else if(self.searchType === "microflowCache") {
+                    // filter my local cache and then process my results
+                    var filteredObjs = [];
+                    for( var i = 0; i < self._localObjectCache.length; i++){
+                        var attributeValue = self._localObjectCache[i].get(self.cacheSearchAttribute);
+                        if(self.cacheSearchMethod == "startswith"){
+                            if( attributeValue.toLowerCase().startsWith(self._currentSearchTerm.toLowerCase()) ){
+                                filteredObjs.push(self._localObjectCache[i]);
+                            }
+                        }
+                        else{
+                            if( attributeValue.toLowerCase().indexOf(self._currentSearchTerm.toLowerCase()) >= 0 ){
+                                filteredObjs.push(self._localObjectCache[i]);
+                            }
+                        }
+                    }
+
+                    searchCallback(filteredObjs);
+                }             
             }
             
             request();
-
         },
         
         _processResults : function (objs, formatResultsFunction, callback) {
@@ -544,8 +722,8 @@ define([
             
             for(var i = 0;i< this.variableData.length; i++){
                 resultDisplay = this._mergeTemplate(this.variableData[i].variables, resultTemplate, false);
-                var div = dom.div({
-                    "class": "autoCompleteResult"
+                var div = dom.create("div",{
+                    "class" : "autoCompleteResult"
                 });
                 div.innerHTML = resultDisplay;
                 selectedDisplay = this._mergeTemplate(this.variableData[i].variables, this._selectedTemplate, true);
@@ -579,7 +757,7 @@ define([
                     })
                 });
             } else{                
-                if (callback && typeof callback === "function") {                
+                if (callback && typeof callback === "function") {
                     callback();
                 }
             };
@@ -746,13 +924,13 @@ define([
                         actionname: mf,
                         guids: [guid]
                     },
-                    callback: function () {
+                    callback: function (objs) {
                         if (cb) {
-                            cb();
+                            cb(objs);
                         }
                     },
                     error: function (e) {
-                        console.error('Error running Microflow: ' + e);
+                        logger.error('Error running Microflow: ' + e);
                     }
                 }, this);
             }
