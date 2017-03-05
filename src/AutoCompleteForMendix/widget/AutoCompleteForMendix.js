@@ -4,9 +4,9 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 3.0.0-alpha
+    @version   : 3.0.0
     @author    : Iain Lindsay
-    @date      : 2017-02-07
+    @date      : 2017-03-05
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -920,7 +920,7 @@ define( [
                         }
                     },
                     error: function (e) {
-                        console.error('Error running Microflow: ' + e);
+                        logger.error('Error running Microflow: ' + e);
                     }
                 }, this);
             }
