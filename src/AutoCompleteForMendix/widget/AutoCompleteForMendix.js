@@ -4,15 +4,9 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-<<<<<<< HEAD
-    @version   : 2.1.1
-    @author    : Iain Lindsay
-    @date      : 2017-01-06
-=======
     @version   : 3.0.0
     @author    : Iain Lindsay
-    @date      : 2017-03-05
->>>>>>> refs/remotes/origin/v3
+    @date      : 2017-03-06
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -22,11 +16,7 @@
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
-<<<<<<< HEAD
-define([
-=======
 define( [
->>>>>>> refs/remotes/origin/v3
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
     "dijit/_TemplatedMixin",
