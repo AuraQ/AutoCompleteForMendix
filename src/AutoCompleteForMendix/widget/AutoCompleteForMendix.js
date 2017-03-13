@@ -106,7 +106,7 @@ define( [
             // create our sort order array
             for(var i=0;i< this._sortContainer.length;i++) {
                 var item = this._sortContainer[i];
-                this._sortParams.push([item.sortAttribute, item.sortOrder]);
+                this._sortParams.push([item.sortAttribute, item.sortOrder]); 
             }
             
             // make sure we only select the control for the current id or we'll overwrite previous instances
