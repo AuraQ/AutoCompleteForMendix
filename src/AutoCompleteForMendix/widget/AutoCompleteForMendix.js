@@ -462,7 +462,10 @@ define( [
         _clearValidations: function() {
             logger.debug(this.id + "._clearValidations");
             if( this._$alertdiv ) {
-                this._$combo.parent().removeClass('has-error');
+                var selector = '#' + this.id;
+                var $formGroup = $(selector); 
+                $formGroup.removeClass('has-error');
+                //this._$combo.parent().removeClass('has-error');
                 this._$alertdiv.remove();
             }
         },
@@ -471,7 +474,11 @@ define( [
         _addValidation: function(message) {
             logger.debug(this.id + "._addValidation");
             this._$alertdiv = $("<div></div>").addClass('alert alert-danger mx-validation-message').html(message);
-            this._$combo.parent().addClass('has-error').append( this._$alertdiv );   
+            var selector = '#' + this.id;
+            var $formGroup = $(selector); 
+            $formGroup.addClass('has-error');
+            this._$combo.parent().append( this._$alertdiv );
+            //this._$combo.parent().addClass('has-error').append( this._$alertdiv );   
         },
 
 
