@@ -41,12 +41,12 @@ define( [
 
     var $ = _jQuery.noConflict(true);
     $ = _select2.createInstance($);
-    
+
     // Declare widget's prototype.
     return declare("AutoCompleteForMendix.widget.AutoCompleteForMendix", [ _WidgetBase, _TemplatedMixin ], {
         // _TemplatedMixin will create our dom node using this HTML template.
         templateString: widgetTemplate,
-               
+
         _$combo: null,
         _isValid : true,
         _displayAttributes : [],
@@ -70,7 +70,7 @@ define( [
         _contextObj: null,
         _$alertdiv: null,
         _alertDiv: null,
-		_hadValidationFeedback: false,
+        _hadValidationFeedback: false,
 
         // dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
         constructor: function() {
@@ -83,7 +83,7 @@ define( [
         // dijit._WidgetBase.postCreate is called after constructing the widget. Implement to do extra setup work.
         postCreate: function() {
             logger.debug(this.id + ".postCreate");            
-            
+
             $(document).on("touchstart",".select2");
             $(document).on("touchstart",".select2", function(event){
                 $(event.target).trigger($.Event("click", {
@@ -91,8 +91,9 @@ define( [
                     pageY: event.originalEvent.touches[0].pageY,
                     originalEvent: event
                 }));
+
             });
-            
+
             this._entity = this.dataAssociation.split('/')[1];
             this._reference = this.dataAssociation.split('/')[0];
             this._constrainedByAssociation = this.constrainedByAssociation;
@@ -101,7 +102,7 @@ define( [
             this._attributeList = this._variableContainer;
             this._displayTemplate = this.displayTemplate;
             this._selectedTemplate = this.selectedTemplate;
-            
+
             // issues with the sort parameters being persisted between widget instances mean we set the sort array to empty.
             this._sortParams = [];
             // create our sort order array
@@ -109,25 +110,25 @@ define( [
                 var item = this._sortContainer[i];
                 this._sortParams.push([item.sortAttribute, item.sortOrder]); 
             }
-            
+
             // make sure we only select the control for the current id or we'll overwrite previous instances
             var selector = '#' + this.id + ' select.autoComplete';
             this._$combo = $(selector); 
 
             // validate the widget        
             this._isValid = this._validateWidget();
-            
+
             // adjust the template based on the display settings.
             if( this.showLabel ) {
                 if(this.formOrientation === "horizontal"){
                     // width needs to be between 1 and 11
                     var comboLabelWidth = this.labelWidth < 1 ? 1 : this.labelWidth;
                     comboLabelWidth = this.labelWidth > 11 ? 11 : this.labelWidth;
-                    
+
                     var comboControlWidth = 12 - comboLabelWidth,                    
                         comboLabelClass = 'col-sm-' + comboLabelWidth,
                         comboControlClass = 'col-sm-' + comboControlWidth;
-                    
+
                     dojoClass.add(this.autoCompleteLabel, comboLabelClass);
                     dojoClass.add(this.autoCompleteComboContainer, comboControlClass);
                 }
@@ -138,7 +139,7 @@ define( [
                 dojoClass.remove(this.autoCompleteMainContainer, "form-group");
                 dojoConstruct.destroy(this.autoCompleteLabel);
             } 
-            
+
             this._initialiseQueryAdapter();
         },
 
@@ -146,7 +147,7 @@ define( [
         update: function(obj, callback) {
             logger.debug(this.id + ".update");
             var self = this;
-            
+
             if (obj === null || !this._isValid) {
                 if (!dojoClass.contains(this.domNode, 'hidden')) {
                     dojoClass.add(this.domNode, 'hidden');
@@ -178,27 +179,27 @@ define( [
 
         // mxui.widget._WidgetBase.enable is called when the widget should enable editing. Implement to enable editing if widget is input widget.
         enable: function() {
-          logger.debug(this.id + ".enable");
+            logger.debug(this.id + ".enable");
         },
 
         // mxui.widget._WidgetBase.enable is called when the widget should disable editing. Implement to disable editing if widget is input widget.
         disable: function() {
-          logger.debug(this.id + ".disable");
+            logger.debug(this.id + ".disable");
         },
 
         // mxui.widget._WidgetBase.resize is called when the page's layout is recalculated. Implement to do sizing calculations. Prefer using CSS instead.
         resize: function(box) {
-          logger.debug(this.id + ".resize");
+            logger.debug(this.id + ".resize");
         },
 
         // mxui.widget._WidgetBase.uninitialize is called when the widget is destroyed. Implement to do special tear-down work.
         uninitialize: function() {
-          logger.debug(this.id + ".uninitialize");
-          this._displayAttributes = [];
-          this._sortParams = [];
-          this._queryAdapter = null;
-          this._$combo.select2("destroy");
-          
+            logger.debug(this.id + ".uninitialize");
+            this._displayAttributes = [];
+            this._sortParams = [];
+            this._queryAdapter = null;
+            this._$combo.select2("destroy");
+
             // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
         },
 
@@ -256,86 +257,87 @@ define( [
         _initialiseControl : function(callback){
             var self = this;
             this._$combo.select2({
-                    dataAdapter: this._queryAdapter,
-                    minimumInputLength: this.minimumInputLength,
-                    width: '100%',
-                    placeholder: this.placeholderText,
-                    allowClear: this.allowClear,
-                    language: {
-                        inputTooShort: function (params) { 
-                            var min = params.minimum || 0;
-                            var input = params.input || '';
-                            var remain = min - input.length;
-                            
-                            var message = self.inputTooShortText;
-                            message = message.split("${minLength}").join(min);
-                            message = message.split("${remainLength}").join(remain);
-                            
-                            return message;
-                        },
-                        noResults: function(){
-                            var retval = self.noResultsText;
+                dataAdapter: this._queryAdapter,
+                minimumInputLength: this.minimumInputLength,
+                width: '100%',
+                placeholder: this.placeholderText,
+                allowClear: this.allowClear,
+                language: {
+                    inputTooShort: function (params) { 
+                        var min = params.minimum || 0;
+                        var input = params.input || '';
+                        var remain = min - input.length;
 
-                            if(self.noResultsDisplayType === "button" && self.noResultsMicroflow){                                
-                                retval = dojoConstruct.create("a",{
-                                    href:"#",
-                                    innerHTML: self.noResultsText,
-                                    'class':"btn btn-block btn-noResults",
-                                    onclick:function(){
-                                        self._contextObj.set(self.noResultsSearchStringAttribute, self._currentSearchTerm);
-                                        self._execMf(self._contextObj.getGuid(), self.noResultsMicroflow);
-                                        self._$combo.select2("close");
-                                    }
-                                });
-                            }
+                        var message = self.inputTooShortText;
+                        message = message.split("${minLength}").join(min);
+                        message = message.split("${remainLength}").join(remain);
 
-                            return retval;
-                        },
-                        searching: function(){
-                            return self.searchingText;
-                        }
+                        return message;
                     },
-                    escapeMarkup: function(markup){
-                        return markup;
-                    },
-                    templateResult : function (item) {
-                        if(!item.id) {
-                            // return `text` for optgroup
-                            return item.text;
+                    noResults: function(){
+                        var retval = self.noResultsText;
+
+                        if(self.noResultsDisplayType === "button" && self.noResultsMicroflow){                                
+                            retval = dojoConstruct.create("a",{
+                                href:"#",
+                                innerHTML: self.noResultsText,
+                                'class':"btn btn-block btn-noResults",
+                                onclick:function(){
+                                    self._contextObj.set(self.noResultsSearchStringAttribute, self._currentSearchTerm);
+                                    self._execMf(self._contextObj.getGuid(), self.noResultsMicroflow);
+                                    self._$combo.select2("close");
+                                }
+                            });
                         }
-                        // return item template, assume its html
-                        return $(item.dropdownDisplay);
+
+                        return retval;
+                    },
+                    searching: function(){
+                        return self.searchingText;
                     }
-                })
+                },
+                escapeMarkup: function(markup){
+                    return markup;
+                },
+                templateResult : function (item) {
+                    if(!item.id) {
+                        // return `text` for optgroup
+                        return item.text;
+                    }
+                    // return item template, assume its html
+                    return $(item.dropdownDisplay);
+                }
+            })
                 .on("select2:select", function(e) {
-                    // set the value
-                    if( e.params && e.params.data ){                        
-                        var guid = e.params.data.id;
-                        self._contextObj.addReference(self._reference, guid);
-                    }
-                                                               
-                    // run the OC microflow if one has been configured.                   
-                    if( self.onChangeMicroflow ) {
-                        self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
-                    }
-                })
+
+                // set the value                
+                if( e.params && e.params.data ){                        
+                    var guid = e.params.data.id;                        
+                    self._contextObj.addReference(self._reference, guid);
+                }
+
+                // run the OC microflow if one has been configured.                   
+                if( self.onChangeMicroflow ) {
+                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
+                }
+            })
                 .on("select2:unselect", function(e) {
-                    // set the value
-                    if( e.params && e.params.data ){                        
-                        var guid = e.params.data.id;
-                        self._contextObj.removeReferences(self._reference, [guid]);
-                    }
-                                                               
-                    // run the OC microflow if one has been configured.                   
-                    if( self.onChangeMicroflow ) {
-                        self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
-                    }
-                });
+                // set the value
+                if( e.params && e.params.data ){                        
+                    var guid = e.params.data.id;
+                    self._contextObj.removeReferences(self._reference, [guid]);
+                }
 
-                this._updateControlDisplay();
+                // run the OC microflow if one has been configured.                   
+                if( self.onChangeMicroflow ) {
+                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
+                }
+            });
 
-                // set the default value for the dropdown (if reference is already set)
-                this._loadCurrentValue(callback);
+            this._updateControlDisplay();
+
+            // set the default value for the dropdown (if reference is already set)
+            this._loadCurrentValue(callback);
 
         },
 
@@ -390,7 +392,7 @@ define( [
 
             // reset the display
             this._updateControlDisplay();
-			
+
             if( this.searchType === "microflowCache"  ){
                 // this is an internal control of the refresh, which bypasses an update on attribute change
                 if( this._updateCache ){ 
@@ -416,7 +418,7 @@ define( [
         _updateCurrentSelection : function(){
             //Also update the current selection
             var referencedObjectGuid = this._contextObj.get(this._reference);
-            
+
             if(referencedObjectGuid !== null && referencedObjectGuid !== "") {                        
                 mx.data.get({
                     guid: referencedObjectGuid,
@@ -429,7 +431,7 @@ define( [
                 this._$combo.val(null).trigger("change");
             }
         },	
-		
+
         // Handle validations.
         _handleValidation: function(validations) {
             logger.debug(this.id + "._handleValidation");
@@ -445,18 +447,18 @@ define( [
                     this._addValidation(message);
 
                     if(!this._hadValidationFeedback) {
-					    this._hadValidationFeedback = true;
-					    this._increaseValidationNotification();
-				    }
+                        this._hadValidationFeedback = true;
+                        this._increaseValidationNotification();
+                    }
 
                     validation.removeAttribute(this._reference);                    
                 }
             }
 
-			if(this._hadValidationFeedback && !message) {
-				this._decreaseValidationNotification();
-				this._hadValidationFeedback = false;
-			}
+            if(this._hadValidationFeedback && !message) {
+                this._decreaseValidationNotification();
+                this._hadValidationFeedback = false;
+            }
         },
 
         // Clear validations.
@@ -483,22 +485,22 @@ define( [
         },
 
 
-		_increaseValidationNotification : function() {
-			//increase notifications in case the widget is inside tab
-			//Warning: This is not documented in official API and might break when the API changes. 
-			if (this.validator) {
-				this.validator.addNotification();
+        _increaseValidationNotification : function() {
+            //increase notifications in case the widget is inside tab
+            //Warning: This is not documented in official API and might break when the API changes. 
+            if (this.validator) {
+                this.validator.addNotification();
 
-			}
-		},
+            }
+        },
 
-		_decreaseValidationNotification : function() {
-			//decrease notifications in case the widget is inside tab
-			//Warning: This is not documented in official API and might break when the API changes. 
-			if (this.validator) {
-				this.validator.removeNotification();
-			}
-		},
+        _decreaseValidationNotification : function() {
+            //decrease notifications in case the widget is inside tab
+            //Warning: This is not documented in official API and might break when the API changes. 
+            if (this.validator) {
+                this.validator.removeNotification();
+            }
+        },
 
         // Reset subscriptions.
         _resetSubscriptions: function() {
@@ -538,15 +540,15 @@ define( [
                 this._handles = [ objectHandle, attrHandle, validationHandle ];
             }
         },
-        
+
         /* CUSTOM FUNCTIONS START HERE */
         _initialiseQueryAdapter : function() {
             var core = this;
-            
+
             /*
             Due to each widget instance potentially having different configuration
             we have to create a unique adapter for every instance.
-            
+
             The following assignment creates a unique id (from http://stackoverflow.com/a/2117523)
             to use for the adapter.
             */            
@@ -554,21 +556,21 @@ define( [
                 var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
                 return v.toString(16);
             });
-            
+
             var adapterName = 'select2/data/queryAdapter_' + adapterId;
-            
+
             $.fn.select2.amd.define(adapterName,[
                 'select2/data/array',
                 'select2/utils',
                 'select2/data/minimumInputLength'
             ],
-            function (ArrayAdapter, Utils, MinimumInputLength) {
+                                    function (ArrayAdapter, Utils, MinimumInputLength) {
 
                 function QueryAdapter ($element, options) {
                     QueryAdapter.__super__.constructor.call(this, $element, options);
                 }
                 Utils.Extend(QueryAdapter, ArrayAdapter);
-                
+
                 QueryAdapter.prototype.query = dojoLang.hitch(core, core._findMatches);
 
                 return Utils.Decorate(QueryAdapter, MinimumInputLength);
@@ -576,10 +578,10 @@ define( [
 
             this._queryAdapter = $.fn.select2.amd.require(adapterName);
         },
-        
+
         _findMatches : function findMatches(params, callback) {
             var self = this;
-            
+
             function request () {       
 
                 self._currentSearchTerm = params.term;
@@ -598,13 +600,13 @@ define( [
                     var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
                     var method = self.xpathSearchMethod == "startswith" ? "starts-with" : self.xpathSearchMethod;
                     var term = params.term.replace(/'/g, "''");
-                    
+
                     var searchConstraint = "[" + method + "(" + self.xpathSearchAttribute + ",'" + term + "')";    
                     if (method == "starts-with") {
                         searchConstraint += " or " + self.xpathSearchAttribute + "='" + term + "'";    
                     }
                     searchConstraint += "]";
-            
+
                     xpath += searchConstraint;
 
                     if( self._constrainedByReference && self._constrainedByAssociationSource ){
@@ -618,7 +620,7 @@ define( [
                             xpath += "[true()=false()]";
                         }
                     }
-                    
+
                     mx.data.get({
                         xpath: xpath,
                         filter: {
@@ -653,25 +655,25 @@ define( [
                     searchCallback(filteredObjs);
                 }             
             }
-            
+
             request();
         },
-        
+
         _processResults : function (objs, formatResultsFunction, callback) {
             var self = this;
             this.variableData = []; // this will hold our variables
             var referenceAttributes = [];
-            
+
             dojoArray.forEach(objs, function (availableObject, index) {
-                
+
                 var currentVariable = {};
                 currentVariable.guid = availableObject.getGuid();
                 currentVariable.variables = [];
-                
+
                 for (var i = 0; i < self._attributeList.length; i++) {
                     if (availableObject.get(self._attributeList[i].variableAttribute) !== null) {
                         var value = self._fetchAttribute(availableObject, self._attributeList[i].variableAttribute, i);
-                        
+
                         currentVariable.variables.push({
                             id: i,
                             variable: self._attributeList[i].variableName,
@@ -684,7 +686,7 @@ define( [
                             variable: self._attributeList[i].variableName,
                             value: "" // set this later
                         });
-                        
+
                         var split = self._attributeList[i].variableAttribute.split("/");
                         var refAttribute = {};
                         for(var a in self._attributeList[i]) refAttribute[a]=self._attributeList[i][a];
@@ -692,14 +694,14 @@ define( [
                         refAttribute.parentGuid = availableObject.getGuid();
                         refAttribute.referenceGuid = availableObject.getReference(split[0]);
                         refAttribute.referenceAttribute = split[2];
-                        
+
                         referenceAttributes.push(refAttribute);
                     }
                 }
-                
+
                 self.variableData.push(currentVariable);                                        
             });  
-            
+
             if( referenceAttributes.length > 0 ){
                 // get values for our references
                 this._fetchReferences(referenceAttributes, formatResultsFunction, callback);                
@@ -708,16 +710,16 @@ define( [
                 dojoLang.hitch(this, formatResultsFunction, callback)();
             }                        
         },
-        
+
         _formatResults : function(callback){
             // an array that will be populated with our results
             var matches = [],
                 resultDisplay = "",
                 selectedDisplay = "";
-            
+
             // default to selected template            
             var resultTemplate = this._displayTemplate || this._selectedTemplate;
-            
+
             for(var i = 0;i< this.variableData.length; i++){
                 resultDisplay = this._mergeTemplate(this.variableData[i].variables, resultTemplate, false);
                 var div = dom.create("div",{
@@ -725,16 +727,16 @@ define( [
                 });
                 div.innerHTML = resultDisplay;
                 selectedDisplay = this._mergeTemplate(this.variableData[i].variables, this._selectedTemplate, true);
-                
+
                 var item = {
                     id: this.variableData[i].guid,
                     text: selectedDisplay,
                     dropdownDisplay: div
                 }; 
-                
+
                 matches.push(item);
             }
-            
+
             if (callback && typeof callback === "function") {
                 logger.debug(this.id + "._formatResults callback");
                 callback({
@@ -742,11 +744,11 @@ define( [
                 });
             }
         },
-        
+
         _loadCurrentValue : function(callback){ 
             // set the default value for the dropdown (if reference is already set)
             var referencedObjectGuid = this._contextObj.get(this._reference);
-            
+
             if(referencedObjectGuid !== null && referencedObjectGuid !== "") {                        
                 mx.data.get({
                     guid: referencedObjectGuid,
@@ -760,35 +762,35 @@ define( [
                 }
             };
         },
-        
+
         _formatCurrentValue : function(callback){
             var selectedDisplay = "";
-            
+
             // we only want the first match (should never have multiple)
             if( this.variableData && this.variableData.length > 0){
                 var currentVariable = this.variableData[0];
-                
+
                 selectedDisplay = this._mergeTemplate(currentVariable.variables, this._selectedTemplate, true);
-                
+
                 // load the initial value
                 var $option = $('<option selected>' + selectedDisplay + '</option>').val(currentVariable.guid);
 
                 this._$combo.append($option).trigger('change'); // append the option and update Select2
             }
-            
+
             if (callback && typeof callback === "function") {
                 logger.debug(this.id + "._formatCurrentValue callback");
                 callback();
             }
         },
-        
+
         _fetchAttribute: function (obj, attr, i, escapeValues) {
             logger.debug(this.id + "._fetchAttribute");
             var returnvalue = "",
                 options = {},
                 numberOptions = null;
 
-             // Referenced object might be empty, can't fetch an attr on empty
+            // Referenced object might be empty, can't fetch an attr on empty
             if (!obj) {
                 return "";
             }
@@ -817,7 +819,7 @@ define( [
                     returnvalue = this._checkString(mx.parser.formatAttribute(obj, attr), escapeValues);
                 }
             }
-                
+
             if (returnvalue === "") {
                 return "";
             } else {
@@ -833,18 +835,18 @@ define( [
             var callbackfunction = function (data, obj) {
                 logger.debug(this.id + "._fetchReferences get callback");
                 var value = this._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
-                
+
                 var result = $.grep(this.variableData, function(e){ 
                     return e.guid == data.parentGuid; 
                 });
-                
+
                 if( result && result[0] ){
                     var resultVariable = $.grep(result[0].variables, function(e){ return e.id == data.attributeIndex; });
                     if( resultVariable && resultVariable[0]){
                         resultVariable[0].value = value;
                     }
                 }
-                                
+
                 l--;
                 if (l <= 0) {
                     // format our results
@@ -876,7 +878,7 @@ define( [
                 }
             }
         },
-        
+
         _checkString: function (str, escapeValues) {
             logger.debug(this.id + "._checkString");
             if (str.indexOf("<script") > -1 || escapeValues) {
@@ -895,25 +897,25 @@ define( [
 
             options.selector = format;
             datevalue = dojo.date.locale.format(new Date(value), options);
-            
+
             return datevalue;
         },
-        
+
         _mergeTemplate : function(variables, template, escapeTemplate) {
             var self = this;
-                
+
             if( escapeTemplate ){
                 template = dom.escapeString(template);
             }
-                                    
+
             for (var attr in variables) {
                 var settings = variables[attr];
                 template = template.split("${" + settings.variable + "}").join(settings.value);
             }
-             
-             return template;
+
+            return template;
         },
-        
+
         _execMf: function (guid, mf, cb) {
             if (guid && mf) {
                 mx.data.action({
