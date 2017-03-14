@@ -82,9 +82,10 @@ define( [
 
         // dijit._WidgetBase.postCreate is called after constructing the widget. Implement to do extra setup work.
         postCreate: function() {
-            logger.debug(this.id + ".postCreate");
+            logger.debug(this.id + ".postCreate");            
             
-            $(document).on("touchstart", function(event){
+            $(document).on("touchstart",".select2");
+            $(document).on("touchstart",".select2", function(event){
                 $(event.target).trigger($.Event("click", {
                     pageX: event.originalEvent.touches[0].pageX,
                     pageY: event.originalEvent.touches[0].pageY,
