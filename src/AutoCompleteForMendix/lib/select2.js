@@ -1193,11 +1193,9 @@ define([], function () {
                                     });
                                 }
 
-                                this.$results.on('mouseup touchend', '.select2-results__option[aria-selected]',
+                                this.$results.on('mouseup', '.select2-results__option[aria-selected]',
                                                  function (evt) {
 
-                                    evt.stopPropagation();
-                                    evt.preventDefault();
                                     var $this = $(this);
 
                                     var data = $this.data('data');
