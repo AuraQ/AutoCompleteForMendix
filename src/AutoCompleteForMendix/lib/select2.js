@@ -1434,8 +1434,7 @@ define([], function () {
                                 var self = this;
 
                                 $(document.body).on('mousedown.select2.' + container.id +' touchstart.select2.' + container.id, function (e) {
-                                    e.stopPropagation();
-                                    e.preventDefault();
+                                    
                                     var $target = $(e.target);
 
                                     var $select = $target.closest('.select2');
@@ -1514,8 +1513,6 @@ define([], function () {
                                 this.$selection.attr('aria-labelledby', id);
 
                                 this.$selection.on('mousedown touchstart', function (evt) {
-                                    evt.stopPropagation();
-                                    evt.preventDefault();
 
                                     // Only respond to left clicks
                                     if (evt.which !== 1) {
@@ -1761,8 +1758,6 @@ define([], function () {
 
                                 this.$selection.on('mousedown touchstart', '.select2-selection__clear',
                                                    function (evt) {
-                                    evt.stopPropagation();
-                                    evt.preventDefault();
                                     self._handleClear(evt);
                                 });
 
@@ -4169,7 +4164,6 @@ define([], function () {
 
                                 this.$dropdownContainer.on('mousedown touchstart', function (evt) {
                                     evt.stopPropagation();
-                                    evt.preventDefault();
                                 });
                             };
 
