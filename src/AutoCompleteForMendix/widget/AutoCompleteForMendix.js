@@ -4,9 +4,9 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 3.0.0
+    @version   : 3.0.1
     @author    : Iain Lindsay
-    @date      : 2017-03-17
+    @date      : 2017-03-31
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -641,7 +641,9 @@ define( [
                     for( var i = 0; i < self._localObjectCache.length; i++){
                         var attributeValue = self._localObjectCache[i].get(self.cacheSearchAttribute);
                         if(self.cacheSearchMethod == "startswith"){
-                            if( attributeValue.toLowerCase().startsWith(self._currentSearchTerm.toLowerCase()) ){
+                            // startsWith not supported in IE
+                            //if( attributeValue.toLowerCase().startsWith(self._currentSearchTerm.toLowerCase()) ){
+                            if( attributeValue.toLowerCase().lastIndexOf(self._currentSearchTerm.toLowerCase(), 0) === 0 ){
                                 filteredObjs.push(self._localObjectCache[i]);
                             }
                         }
