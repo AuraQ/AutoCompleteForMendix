@@ -4,7 +4,7 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 3.0.1
+    @version   : 3.1.1
     @author    : Iain Lindsay
     @date      : 2017-03-31
     @copyright : AuraQ Limited 2017
@@ -64,6 +64,7 @@ define( [
         _currentSearchTerm : "",
         _localObjectCache: null,
         _updateCache : true,
+        _queryTimeout : null,
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -564,7 +565,7 @@ define( [
                 'select2/utils',
                 'select2/data/minimumInputLength'
             ],
-                                    function (ArrayAdapter, Utils, MinimumInputLength) {
+            function (ArrayAdapter, Utils, MinimumInputLength) {
 
                 function QueryAdapter ($element, options) {
                     QueryAdapter.__super__.constructor.call(this, $element, options);
@@ -657,8 +658,16 @@ define( [
                     searchCallback(filteredObjs);
                 }             
             }
+            if (this.searchDelay && this.searchDelay > 0) {
+                if (this._queryTimeout) {
+                    window.clearTimeout(this._queryTimeout);
+                }
 
-            request();
+                this._queryTimeout = window.setTimeout(request, this.searchDelay);
+            } else {
+                request(); 
+            }
+            //request();
         },
 
         _processResults : function (objs, formatResultsFunction, callback) {
