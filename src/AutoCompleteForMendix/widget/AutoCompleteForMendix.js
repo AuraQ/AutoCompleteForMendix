@@ -4,9 +4,9 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 3.1.1
+    @version   : 3.1.2
     @author    : Iain Lindsay
-    @date      : 2017-03-31
+    @date      : 2017-05-08
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -85,7 +85,6 @@ define( [
         postCreate: function() {
             logger.debug(this.id + ".postCreate");            
 
-            $(document).on("touchstart",".select2");
             $(document).on("touchstart",".select2", function(event){
                 $(event.target).trigger($.Event("click", {
                     pageX: event.originalEvent.touches[0].pageX,
