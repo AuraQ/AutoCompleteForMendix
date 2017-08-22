@@ -29,6 +29,11 @@
                 <enumerationValue key="microflowCache">Microflow (Cached)</enumerationValue>
             </enumerationValues>
         </property>
+        <property key="searchDelay" type="integer" required="true" defaultValue="0">
+            <caption>Search Delay</caption>
+            <category>Search</category>
+            <description>The delay, in milliseconds, before a search is executed.</description>
+        </property>  
         <!-- XPATH SEARCH PROPERTIES-->
         <property key="xpathSearchMethod" type="enumeration" defaultValue="startswith">
             <caption>Search method</caption>

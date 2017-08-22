@@ -89,6 +89,7 @@ See [here](https://github.com/AuraQ/AutoCompleteForMendix/issues) for all outsta
 
 # v3.0.0 Breaking changes:
 - ‘Search attribute’ will need to be reselected.
+- 'Search method' gets reset back to 'starts-with' when widget is first updated in the modeller.
 
 # Thanks
 
