@@ -12,13 +12,13 @@
         <property key="dataAssociation" type="entity" required="true" isPath="yes" pathType="reference" allowNonPersistableEntities="true">
             <caption>Select Source</caption>
             <category>Search</category>
-            <description>Select the entity to search/select from. This property defines the reference between the context object and the selectable object. </description> 
+            <description>Select the entity to search/select from. This property defines the reference between the context object and the selectable object. </description>
         </property>
         <property key="minimumInputLength" type="integer" required="true" defaultValue="3">
             <caption>Minimum Input Length</caption>
             <category>Search</category>
             <description>The minimum number of characters to be entered before the search executes</description>
-        </property>  
+        </property>
         <property key="searchType" type="enumeration" defaultValue="xpath">
             <caption>Search type</caption>
             <category>Search</category>
@@ -33,7 +33,7 @@
             <caption>Search Delay</caption>
             <category>Search</category>
             <description>The delay, in milliseconds, before a search is executed.</description>
-        </property>  
+        </property>
         <!-- XPATH SEARCH PROPERTIES-->
         <property key="xpathSearchMethod" type="enumeration" defaultValue="startswith">
             <caption>Search method</caption>
@@ -56,22 +56,22 @@
             <caption>Data constraint</caption>
             <category>Search - XPath</category>
             <description>Optional constraint to filter the searchable objects</description>
-        </property>  
-        <property key="constrainedByAssociation" type="entity" required="false" isPath="yes" pathType="reference">
+        </property>
+        <property key="constrainedByAssociation" type="entity" required="false" isPath="yes" pathType="reference" allowNonPersistableEntities="true">
             <caption>Constrained by [Context]</caption>
             <category>Search - XPath</category>
-            <description>Select the association from the context entity that the objects should be constrained by</description> 
-        </property>  
+            <description>Select the association from the context entity that the objects should be constrained by</description>
+        </property>
         <property key="constrainedByAssociationSource" type="entity" required="false" isPath="yes" pathType="reference" entityProperty="dataAssociation">
             <caption>Constrained by [Source]</caption>
             <category>Search - XPath</category>
-            <description>Select the association from the source entity that the objects should be constrained by</description> 
+            <description>Select the association from the source entity that the objects should be constrained by</description>
         </property>
         <property key="maxRecords" type="integer" required="true" defaultValue="0">
             <caption>Max Records</caption>
             <category>Search - XPath</category>
             <description>The maximum number of records to return (0 means no limit is applied)</description>
-        </property>  
+        </property>
         <!-- MICROFLOW SEARCH PROPERTIES-->
         <property key="searchMicroflow" type="microflow" required="false">
             <caption>Search microflow</caption>
@@ -187,7 +187,7 @@
                     <description>Displays a numeric value with group digits</description>
                 </property>
             </properties>
-        </property>  
+        </property>
         <property key="_sortContainer" type="object" isList="true" required="false">
             <caption>Sort order</caption>
             <category>Result display</category>
@@ -225,7 +225,7 @@
             <caption>Show Label</caption>
             <category>Control Display</category>
             <description>Show a label for the field.</description>
-        </property>  
+        </property>
         <property key="fieldCaption" type="translatableString" required="false" multiline="false">
             <caption>Label Caption</caption>
             <category>Control Display</category>
@@ -299,7 +299,7 @@
                 <translation lang="en_GB">No results found.</translation>
                 <translation lang="en_US">No results found.</translation>
             </translations>
-        </property>       
+        </property>
         <property key="noResultsSearchStringAttribute" type="attribute" required="false">
             <caption>Search String Attribute </caption>
             <category>No Results</category>
@@ -351,4 +351,3 @@
         </property>
     </properties>
 </widget>
-
