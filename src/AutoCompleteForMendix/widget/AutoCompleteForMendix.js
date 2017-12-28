@@ -4,9 +4,9 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 3.1.2
+    @version   : 3.2.0
     @author    : Iain Lindsay
-    @date      : 2017-05-08
+    @date      : 2017-08-21
     @copyright : AuraQ Limited 2017
     @license   : Apache V2
 
@@ -262,6 +262,7 @@ define( [
                 width: '100%',
                 placeholder: this.placeholderText,
                 allowClear: this.allowClear,
+                selectOnClose : this.selectOnClose,
                 language: {
                     inputTooShort: function (params) { 
                         var min = params.minimum || 0;
@@ -308,7 +309,7 @@ define( [
                     return $(item.dropdownDisplay);
                 }
             })
-                .on("select2:select", function(e) {
+            .on("select2:select", function(e) {
 
                 // set the value                
                 if( e.params && e.params.data ){                        
@@ -321,7 +322,7 @@ define( [
                     self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
                 }
             })
-                .on("select2:unselect", function(e) {
+            .on("select2:unselect", function(e) {
                 // set the value
                 if( e.params && e.params.data ){                        
                     var guid = e.params.data.id;
@@ -332,6 +333,11 @@ define( [
                 if( self.onChangeMicroflow ) {
                     self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
                 }
+            })
+            .on("select2:close",function(e){
+                var setfocus = setTimeout(function() {
+                    self._$combo.select2('focus');
+                }, 0);                
             });
 
             this._updateControlDisplay();

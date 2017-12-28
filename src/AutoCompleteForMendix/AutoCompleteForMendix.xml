@@ -276,6 +276,11 @@
                 <attributeType name="Boolean"/>
             </attributeTypes>
         </property>
+        <property key="selectOnClose" type="boolean" defaultValue="false">
+            <caption>Select On Close</caption>
+            <category>Control Display</category>
+            <description>If true, selects the highlighted value when the dropdown closes (e.g. when tabbing out of the control).</description>
+        </property>
         <!-- NO RESULT HANDLING PROPERTIES-->
         <property key="noResultsDisplayType" type="enumeration" defaultValue="text">
             <caption>'No results found' display type</caption>
