@@ -281,6 +281,11 @@
             <category>Control Display</category>
             <description>If true, selects the highlighted value when the dropdown closes (e.g. when tabbing out of the control).</description>
         </property>
+        <property key="parentSelector" type="string" required="false">
+            <caption>Parent selector</caption>
+            <category>Control Display</category>
+            <description>A CSS selector used to manage where the dropdown is rendered. E.g. leave empty for a main page, and use .modal-dialog for a modal</description>
+        </property>
         <!-- NO RESULT HANDLING PROPERTIES-->
         <property key="noResultsDisplayType" type="enumeration" defaultValue="text">
             <caption>'No results found' display type</caption>
@@ -348,6 +353,16 @@
             <category>Events</category>
             <description>Run this microflow when the dropdown changes</description>
             <returnType type="Void"/>
+        </property>
+        <property key="onChangeMicroflowShowProgress" type="boolean" defaultValue="true">
+            <caption>Show Progress Bar</caption>
+            <category>Events</category>
+            <description>Controls whether a progress bar should be displayed when executing the onchange microflow</description>
+        </property>
+        <property key="onChangeMicroflowProgressMessage" type="string" required="false">
+            <caption>Progress Message</caption>
+            <category>Events</category>
+            <description>The progress message to show when executing the onchange microflow</description>
         </property>
     </properties>
 </widget>
