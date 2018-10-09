@@ -4,10 +4,10 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 3.2.0
+    @version   : 4.0.0
     @author    : Iain Lindsay
-    @date      : 2017-08-21
-    @copyright : AuraQ Limited 2017
+    @date      : 2018-05-08
+    @copyright : AuraQ Limited 2018
     @license   : Apache V2
 
     Documentation
@@ -256,7 +256,47 @@ define( [
 
         _initialiseControl : function(callback){
             var self = this;
-            this._$combo.select2({
+            this._$combo.select2(this._getSelect2Options())
+            .on("select2:select", function(e) {
+
+                // set the value                
+                if( e.params && e.params.data ){                        
+                    var guid = e.params.data.id;                        
+                    self._contextObj.addReference(self._reference, guid);
+                }
+
+                // run the OC microflow if one has been configured.                   
+                if( self.onChangeMicroflow ) {
+                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
+                }
+            })
+            .on("select2:unselect", function(e) {
+                // set the value
+                if( e.params && e.params.data ){                        
+                    var guid = e.params.data.id;
+                    self._contextObj.removeReferences(self._reference, [guid]);
+                }
+
+                // run the OC microflow if one has been configured.                   
+                if( self.onChangeMicroflow ) {
+                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
+                }
+            })
+            .on("select2:close",function(e){
+                var setfocus = setTimeout(function() {
+                    self._$combo.select2('focus');
+                }, 0);                
+            });
+
+            this._updateControlDisplay();
+
+            // set the default value for the dropdown (if reference is already set)
+            this._loadCurrentValue(callback);
+        },
+
+        _getSelect2Options : function(){
+            var self = this;
+            var options = {
                 dataAdapter: this._queryAdapter,
                 minimumInputLength: this.minimumInputLength,
                 width: '100%',
@@ -308,43 +348,14 @@ define( [
                     // return item template, assume its html
                     return $(item.dropdownDisplay);
                 }
-            })
-            .on("select2:select", function(e) {
+            };
 
-                // set the value                
-                if( e.params && e.params.data ){                        
-                    var guid = e.params.data.id;                        
-                    self._contextObj.addReference(self._reference, guid);
-                }
+            var parentSelector = this.parentSelector;
 
-                // run the OC microflow if one has been configured.                   
-                if( self.onChangeMicroflow ) {
-                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
-                }
-            })
-            .on("select2:unselect", function(e) {
-                // set the value
-                if( e.params && e.params.data ){                        
-                    var guid = e.params.data.id;
-                    self._contextObj.removeReferences(self._reference, [guid]);
-                }
-
-                // run the OC microflow if one has been configured.                   
-                if( self.onChangeMicroflow ) {
-                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
-                }
-            })
-            .on("select2:close",function(e){
-                var setfocus = setTimeout(function() {
-                    self._$combo.select2('focus');
-                }, 0);                
-            });
-
-            this._updateControlDisplay();
-
-            // set the default value for the dropdown (if reference is already set)
-            this._loadCurrentValue(callback);
-
+            if(parentSelector){
+                options.dropdownParent = $(parentSelector);
+            }
+            return options;
         },
 
         _updateControlDisplay : function(){
@@ -687,7 +698,8 @@ define( [
                 currentVariable.variables = [];
 
                 for (var i = 0; i < self._attributeList.length; i++) {
-                    if (availableObject.get(self._attributeList[i].variableAttribute) !== null) {
+                    var variableAttribute = availableObject.get(self._attributeList[i].variableAttribute);
+                    if (variableAttribute !== null) {
                         var value = self._fetchAttribute(availableObject, self._attributeList[i].variableAttribute, i);
 
                         currentVariable.variables.push({
@@ -705,7 +717,10 @@ define( [
 
                         var split = self._attributeList[i].variableAttribute.split("/");
                         var refAttribute = {};
-                        for(var a in self._attributeList[i]) refAttribute[a]=self._attributeList[i][a];
+                        for(var a in self._attributeList[i]){
+                            refAttribute[a]=self._attributeList[i][a];
+                        }
+
                         refAttribute.attributeIndex = i;
                         refAttribute.parentGuid = availableObject.getGuid();
                         refAttribute.referenceGuid = availableObject.getReference(split[0]);
@@ -849,24 +864,27 @@ define( [
             var l = referenceAttributes.length;
 
             var callbackfunction = function (data, obj) {
-                logger.debug(this.id + "._fetchReferences get callback");
-                var value = this._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
+                logger.debug(self.id + "._fetchReferences get callback");
 
-                var result = $.grep(this.variableData, function(e){ 
-                    return e.guid == data.parentGuid; 
-                });
+                if(obj != null){
+                    var value = self._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
 
-                if( result && result[0] ){
-                    var resultVariable = $.grep(result[0].variables, function(e){ return e.id == data.attributeIndex; });
-                    if( resultVariable && resultVariable[0]){
-                        resultVariable[0].value = value;
+                    var result = $.grep(self.variableData, function(e){ 
+                        return e.guid == data.parentGuid; 
+                    });
+
+                    if( result && result[0] ){
+                        var resultVariable = $.grep(result[0].variables, function(e){ return e.id == data.attributeIndex; });
+                        if( resultVariable && resultVariable[0]){
+                            resultVariable[0].value = value;
+                        }
                     }
                 }
 
                 l--;
                 if (l <= 0) {
                     // format our results
-                    dojoLang.hitch(this, formatResultsFunction, callback)();
+                    dojoLang.hitch(self, formatResultsFunction, callback)();
                 }
             };
 
@@ -891,6 +909,9 @@ define( [
                         guid: guid,
                         callback: dojoLang.hitch(this, callbackfunction, dataparam)
                     });
+                }
+                else{
+                    callbackfunction(null,null);
                 }
             }
         },
@@ -932,9 +953,10 @@ define( [
             return template;
         },
 
-        _execMf: function (guid, mf, cb) {
-            if (guid && mf) {
-                mx.data.action({
+        _execMf: function (guid, mf, cb, showProgress, message) {
+            var self = this;
+            if (guid && mf) {                
+                var options = {
                     params: {
                         applyto: 'selection',
                         actionname: mf,
@@ -948,9 +970,15 @@ define( [
                     error: function (e) {
                         logger.error('Error running Microflow: ' + e);
                     }
-                }, this);
-            }
+                }
 
+                if(showProgress){                    
+                    options.progress = "modal";
+                    options.progressMsg = message;
+                }
+
+                mx.ui.action(mf,options, this);
+            }
         }
         /* CUSTOM FUNCTIONS END HERE */
     });
