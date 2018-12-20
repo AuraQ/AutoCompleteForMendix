@@ -73,6 +73,7 @@ define( [
         _$alertdiv: null,
         _alertDiv: null,
         _hadValidationFeedback: false,
+        _initialized: false,
 
         // dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
         constructor: function() {
@@ -169,11 +170,23 @@ define( [
                     // execute our search MF and then initialise the combo when we return
                     this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function(objs){
                         self._localObjectCache = objs;
-                        self._initialiseControl(callback);
+                        if(!self._initialized) {
+                            self._initialiseControl(callback);
+                        } else {
+                            if (callback && typeof callback === "function") {
+                                callback();
+                            }
+                        }
                     });
                 }
                 else{
-                    this._initialiseControl(callback);
+                    if(!this._initialized) {
+                        this._initialiseControl(callback);
+                    } else {
+                        if (callback && typeof callback === "function") {
+                            callback();
+                        }
+                    }
                 }
             }
         },
@@ -296,6 +309,7 @@ define( [
             });
 
             this._updateControlDisplay();
+            this._initialized = true;
 
             // set the default value for the dropdown (if reference is already set)
             this._loadCurrentValue(callback);
