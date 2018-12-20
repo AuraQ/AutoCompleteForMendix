@@ -1,4 +1,6 @@
-test/javasource/
+test/javasource/*
+!test/javasource/testsuite_default
+test/javasource/testsuite_default/proxies/*
 test/deployment/
 test/.classpath
 test/.project
@@ -18,3 +20,4 @@ node_modules/
 *DS_Store*
 .vscode/
 *.bak
+
