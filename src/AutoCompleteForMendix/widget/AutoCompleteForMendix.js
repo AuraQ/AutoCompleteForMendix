@@ -6,7 +6,7 @@
     @file      : AutoCompleteForMendix.js
     @version   : 4.0.0
     @author    : Iain Lindsay
-    @date      : 2018-05-08
+    @date      : 2018-12-19
     @copyright : AuraQ Limited 2018
     @license   : Apache V2
 
@@ -65,6 +65,7 @@ define( [
         _localObjectCache: null,
         _updateCache : true,
         _queryTimeout : null,
+        _currentReferenceAttributesLength : 0,
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -287,6 +288,12 @@ define( [
                     self._$combo.select2('focus');
                 }, 0);                
             });
+            
+            this._$combo.data('select2')
+            .on('results:message', function () {
+                this.dropdown._positionDropdown();
+                this.dropdown._resizeDropdown();
+            });
 
             this._updateControlDisplay();
 
@@ -359,20 +366,27 @@ define( [
         },
 
         _updateControlDisplay : function(){
-            // fixed property gets checked first
-            if(this.disabled){
+
+            // if data view is disabled
+            if(this.get("disabled")) {
                 this._$combo.prop('disabled',true);
-            } else{
-                this._$combo.prop('disabled',false);
             }
-            // attribute property beats fixed property    
-            if(this.disabledViaAttribute){
-                if(this._contextObj.get(this.disabledViaAttribute) ){
-                    this._$combo.prop('disabled',true);
-                } else{
-                    this._$combo.prop('disabled',false);
-                }
-            } 
+            else {
+                    // fixed property gets checked first
+                    if(this.disabled){
+                        this._$combo.prop('disabled',true);
+                    } else{
+                        this._$combo.prop('disabled',false);
+                    }
+                    // attribute property beats fixed property    
+                    if(this.disabledViaAttribute){
+                        if(this._contextObj.get(this.disabledViaAttribute) ){
+                            this._$combo.prop('disabled',true);
+                        } else{
+                            this._$combo.prop('disabled',false);
+                        }
+                    }
+            }
 
             // fixed property gets checked first
             if(this.visible){
@@ -724,7 +738,7 @@ define( [
                         refAttribute.attributeIndex = i;
                         refAttribute.parentGuid = availableObject.getGuid();
                         refAttribute.referenceGuid = availableObject.getReference(split[0]);
-                        refAttribute.referenceAttribute = split[2];
+                        refAttribute.referenceAttribute = split.slice(2).join("/");
 
                         referenceAttributes.push(refAttribute);
                     }
@@ -860,16 +874,42 @@ define( [
 
         _fetchReferences: function (referenceAttributes, formatResultsFunction, callback) {
             logger.debug(this.id + "._fetchReferences");
-            var self = this;
-            var l = referenceAttributes.length;
+            this._currentReferenceAttributesLength = referenceAttributes.length;
+             
+            for (var i = 0; i < referenceAttributes.length; i++) {
+                var attributeData = referenceAttributes[i];
+                this._getReferencedObject(i, attributeData.referenceGuid, attributeData.referenceAttribute, attributeData.attributeIndex, attributeData.parentGuid, formatResultsFunction, callback);
+            }
+        },
 
-            var callbackfunction = function (data, obj) {
-                logger.debug(self.id + "._fetchReferences get callback");
+        _getReferencedObject : function(index, guid, referenceAttribute, attributeIndex, parentGuid, formatResultsFunction, callback){
+            var data = {
+                i: index,
+                attributeIndex: attributeIndex,
+                parentGuid : parentGuid,
+                referenceAttribute : referenceAttribute
+            };
 
-                if(obj != null){
-                    var value = self._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
+            if (guid !== "") {
+                mx.data.get({
+                    guid: guid,
+                    callback: dojoLang.hitch(this, this._fetchReferenceCallback, data, formatResultsFunction, callback)
+                });
+            }
+            else{
+                this._fetchReferenceCallback(null,formatResultsFunction, callback, null);
+            }
+        },
 
-                    var result = $.grep(self.variableData, function(e){ 
+        _fetchReferenceCallback : function (data, formatResultsFunction, callback, obj) {
+            logger.debug(this.id + "._fetchReferences get callback");
+
+            if(obj != null){
+
+                if(data.referenceAttribute.indexOf("/") <= -1){
+                    var value = this._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
+
+                    var result = $.grep(this.variableData, function(e){ 
                         return e.guid == data.parentGuid; 
                     });
 
@@ -879,39 +919,19 @@ define( [
                             resultVariable[0].value = value;
                         }
                     }
-                }
 
-                l--;
-                if (l <= 0) {
-                    // format our results
-                    dojoLang.hitch(self, formatResultsFunction, callback)();
-                }
-            };
-
-            for (var i = 0; i < referenceAttributes.length; i++) {
-                var listObj = referenceAttributes[i],
-                    split = referenceAttributes[i].variableAttribute.split("/"),
-                    guid = referenceAttributes[i].referenceGuid,
-                    attributeIndex = referenceAttributes[i].attributeIndex,
-                    parentGuid = referenceAttributes[i].parentGuid,
-                    referenceAttribute = referenceAttributes[i].referenceAttribute,
-                    dataparam = {
-                        i: i,
-                        listObj: listObj,
-                        attributeIndex: attributeIndex,
-                        parentGuid : parentGuid,
-                        referenceAttribute : referenceAttribute
-                    };
-
-
-                if (guid !== "") {
-                    mx.data.get({
-                        guid: guid,
-                        callback: dojoLang.hitch(this, callbackfunction, dataparam)
-                    });
+                    this._currentReferenceAttributesLength--;
+                    if (this._currentReferenceAttributesLength <= 0) {
+                        // format our results
+                        dojoLang.hitch(this, formatResultsFunction, callback)();
+                    }
                 }
                 else{
-                    callbackfunction(null,null);
+                    var split = data.referenceAttribute.split("/");
+                    var referenceGuid = obj.getReference(split[0]);
+                    var referenceAttribute = split.slice(2).join("/");
+
+                    this._getReferencedObject(data.i, referenceGuid, referenceAttribute, data.attributeIndex, data.parentGuid, formatResultsFunction, callback);
                 }
             }
         },

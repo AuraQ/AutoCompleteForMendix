@@ -5,8 +5,7 @@
   "license": "Apache V2",
   "author": "Iain Lindsay",
   "private": true,
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "grunt": "0.4.5",
     "grunt-contrib-clean": "^0.6.0",
