@@ -641,7 +641,7 @@ define( [
                         }
                     });
 
-                if( self.searchType === "xpath"){
+                if( self.searchType === "xpath"){ 
                     var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
                     var method = self.xpathSearchMethod == "startswith" ? "starts-with" : self.xpathSearchMethod;
                     var term = params.term.replace(/'/g, "''");
