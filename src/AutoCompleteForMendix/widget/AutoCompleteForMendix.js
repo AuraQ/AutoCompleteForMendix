@@ -6,7 +6,7 @@
     @file      : AutoCompleteForMendix.js
     @version   : 4.0.0
     @author    : Iain Lindsay
-    @date      : 2018-12-19
+    @date      : 2019-06-19
     @copyright : AuraQ Limited 2018
     @license   : Apache V2
 
@@ -758,6 +758,15 @@ define( [
                     }
                 }
 
+	// added below code to capture disable dropdown option value to list
+		if(self.disableDropdownOption){
+                  var disableOption =   availableObject.get(self.disableDropdownOption);
+				 currentVariable.variables.push({
+                            id: self._attributeList.length + 1,
+                            variable: self.disableDropdownOption,
+                            value: disableOption
+                        }); 
+                    }
                 self.variableData.push(currentVariable);                                        
             });  
 
@@ -792,6 +801,25 @@ define( [
                     text: selectedDisplay,
                     dropdownDisplay: div
                 }; 
+		if(this.disableDropdownOption){
+			var disable = false;
+			for(var j = 0; j < this.variableData[i].variables.length; j++)  {
+			if (this.variableData[i].variables[j].variable == this.disableDropdownOption){
+				disable = this.variableData[i].variables[j].value;
+				break; 
+				}
+			}
+			if(disable){
+				item.disabled = true;
+				if (this.disableToolTipMsg !== ""){
+				$(item).attr('title', this.disableToolTipMsg);	
+								
+				}
+								
+                        } else{
+                            item.disabled = false;
+                        }
+                    }
 
                 matches.push(item);
             }
