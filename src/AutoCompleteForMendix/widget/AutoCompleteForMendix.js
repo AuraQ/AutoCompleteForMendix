@@ -553,9 +553,9 @@ define( [
             logger.debug(this.id + "._resetSubscriptions");
             // Release handles on previous object, if any.
             if (this._handles) {
-                dojoArray.forEach(this._handles, function (handle) {
-                    mx.data.unsubscribe(handle);
-                });
+                dojoArray.forEach(this._handles, dojoLang.hitch(this, function (handle) {
+                    this.unsubscribe(handle);
+                }));
                 this._handles = [];
             }
 
