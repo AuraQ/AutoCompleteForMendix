@@ -33,10 +33,11 @@ define( [
     "dojo/html",
     "dojo/_base/event",
     "dojo/_base/kernel",
+    "dojo/date/locale",
     "AutoCompleteForMendix/lib/jquery-1.11.2",
     "AutoCompleteForMendix/lib/select2",
     "dojo/text!AutoCompleteForMendix/widget/template/AutoCompleteForMendix.html"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, dojo, _jQuery, _select2, widgetTemplate) {
+], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, dojo, dojoLocale, _jQuery, _select2, widgetTemplate) {
     "use strict";
 
     var $ = _jQuery.noConflict(true);
@@ -970,7 +971,7 @@ define( [
             }
 
             options.selector = format;
-            datevalue = dojo.date.locale.format(new Date(value), options);
+            datevalue = dojoLocale.format(new Date(value), options);
 
             return datevalue;
         },
