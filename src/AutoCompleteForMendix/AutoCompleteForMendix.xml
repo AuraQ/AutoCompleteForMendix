@@ -286,19 +286,19 @@
             <category>Control Display</category>
             <description>A CSS selector used to manage where the dropdown is rendered. E.g. leave empty for a main page, and use .modal-dialog for a modal</description>
         </property>
-	<property key="disableDropdownOption" type="attribute" required="false" entityProperty="dataAssociation">
-			<caption>Disable Dropdown Option</caption>
-			<category>Control Display</category>
-			<description>Boolean attribute based on which the dropdown option will be disabled</description>
-			<attributeTypes>
-				<attributeType name="Boolean"/>
-			</attributeTypes>
-	</property>
-	<property key="disableToolTipMsg" type="translatableString" required="false" multiline="false">
-			<caption>Disable List Tooltip</caption>
-			<category>Control Display</category>
-			<description>Specify the tooptip message for the disabled list values</description>
-	</property>
+        <property key="disableDropdownOption" type="attribute" required="false" entityProperty="dataAssociation">
+                <caption>Disable Dropdown Option</caption>
+                <category>Control Display</category>
+                <description>Boolean attribute based on which the dropdown option will be disabled</description>
+                <attributeTypes>
+                    <attributeType name="Boolean"/>
+                </attributeTypes>
+        </property>
+        <property key="disableToolTipMsg" type="translatableString" required="false" multiline="false">
+                <caption>Disable List Tooltip</caption>
+                <category>Control Display</category>
+                <description>Specify the tooptip message for the disabled list values</description>
+        </property>
         <!-- NO RESULT HANDLING PROPERTIES-->
         <property key="noResultsDisplayType" type="enumeration" defaultValue="text">
             <caption>'No results found' display type</caption>
