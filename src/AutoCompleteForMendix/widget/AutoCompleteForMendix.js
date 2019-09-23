@@ -864,7 +864,7 @@ define( [
                 returnvalue = this._parseDate(this._attributeList[i].datetimeformat, options, obj.get(attr));
             } else if (obj.isEnum(attr)) {
                 returnvalue = this._checkString(obj.getEnumCaption(attr, obj.get(attr)), escapeValues);
-            }  else if (obj.isNumeric(attr) || obj.isCurrency(attr) || obj.getAttributeType(attr) === "AutoNumber") {
+            }  else if (obj.isNumeric(attr) || ( obj.isCurrency && obj.isCurrency(attr) ) || obj.getAttributeType(attr) === "AutoNumber") {
                 numberOptions = {};
                 numberOptions.places = this._attributeList[i].decimalPrecision;
                 if (this._attributeList[i].groupDigits) {
