@@ -4,7 +4,7 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 4.0.0
+    @version   : 5.0.0
     @author    : Iain Lindsay
     @date      : 2018-12-19
     @copyright : AuraQ Limited 2018
@@ -133,6 +133,9 @@ define( [
 
                     dojoClass.add(this.autoCompleteLabel, comboLabelClass);
                     dojoClass.add(this.autoCompleteComboContainer, comboControlClass);
+                }
+                else{
+                    dojoClass.add(this.autoCompleteMainContainer, "no-columns");
                 }
 
                 this.autoCompleteLabel.innerHTML = this.fieldCaption;

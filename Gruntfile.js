@@ -25,11 +25,15 @@ var path = require("path"),
     shelljs = require("shelljs"),
     pkg = require("./package.json");
 
-var TEST_PATH = path.join(shelljs.pwd(), "/test/Test.mpr");
+
 var WIDGET_XML = path.join(shelljs.pwd(), "/src/", pkg.name, "/", pkg.name + ".xml");
 var PACKAGE_XML = path.join(shelljs.pwd(), "/src/package.xml");
+var TEST_PATH = path.join(shelljs.pwd(), "/test/Test.mpr");
 var TEST_WIDGETS_FOLDER = path.join(shelljs.pwd(), "./test/widgets");
 var TEST_WIDGETS_DEPLOYMENT_FOLDER = path.join(shelljs.pwd(), "./test/deployment/web/widgets");
+var TEST_8_PATH = path.join(shelljs.pwd(), "/test 8/Test.mpr");
+var TEST_8_WIDGETS_FOLDER = path.join(shelljs.pwd(), "./test 8/widgets");
+var TEST_8_WIDGETS_DEPLOYMENT_FOLDER = path.join(shelljs.pwd(), "./test 8/deployment/web/widgets");
 
 /**
  * If you want to use a custom folder for the test project, make sure these are added to package.json:
@@ -80,12 +84,14 @@ module.exports = function (grunt) {
         copy: {
             deployment: {
                 files: [
-                    { dest: TEST_WIDGETS_DEPLOYMENT_FOLDER, cwd: "./src/", src: ["**/*"], expand: true }
+                    { dest: TEST_WIDGETS_DEPLOYMENT_FOLDER, cwd: "./src/", src: ["**/*"], expand: true },
+                    { dest: TEST_8_WIDGETS_DEPLOYMENT_FOLDER, cwd: "./src/", src: ["**/*"], expand: true }
                 ]
             },
             mpks: {
                 files: [
-                    { dest: TEST_WIDGETS_FOLDER, cwd: "./dist/", src: [ pkg.name + ".mpk"], expand: true }
+                    { dest: TEST_WIDGETS_FOLDER, cwd: "./dist/", src: [ pkg.name + ".mpk"], expand: true },
+                    { dest: TEST_8_WIDGETS_FOLDER, cwd: "./dist/", src: [ pkg.name + ".mpk"], expand: true }
                 ]
             }
         },

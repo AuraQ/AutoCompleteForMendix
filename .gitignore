@@ -8,6 +8,18 @@ test/theme/
 test/userlib/
 test/.classpath
 test/.project
+
+test 8/javasource/*
+!test 8/javasource/testsuite_default
+test 8/javasource/testsuite_default/proxies/*
+test 8/deployment/
+test 8/.classpath
+test 8/.project
+test 8/theme/
+test 8/userlib/
+test 8/.classpath
+test 8/.project
+
 *.launch
 *.tmp
 *.lock
