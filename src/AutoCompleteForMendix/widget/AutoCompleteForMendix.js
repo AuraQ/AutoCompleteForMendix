@@ -468,8 +468,13 @@ define( [
             if(referencedObjectGuid !== null && referencedObjectGuid !== "") {                        
                 mx.data.get({
                     guid: referencedObjectGuid,
-                    callback: dojoLang.hitch(this, function(obj){                             
-                        this._processResults([obj],this._formatCurrentValue, null);              
+                    callback: dojoLang.hitch(this, function(obj){           
+                        if(obj){
+                            this._processResults([obj],this._formatCurrentValue, null);
+                        }
+                        else{
+                            this._$combo.val(null).trigger("change");
+                        }
                     })
                 });
             }
@@ -812,8 +817,15 @@ define( [
             if(referencedObjectGuid !== null && referencedObjectGuid !== "") {                        
                 mx.data.get({
                     guid: referencedObjectGuid,
-                    callback: dojoLang.hitch(this, function(obj){                             
-                        this._processResults([obj],this._formatCurrentValue, callback);              
+                    callback: dojoLang.hitch(this, function(obj){    
+                        if(obj){
+                            this._processResults([obj],this._formatCurrentValue, callback);
+                        }                         
+                        else{
+                            if (callback && typeof callback === "function") {
+                                callback();
+                            }
+                        }
                     })
                 });
             } else{                
