@@ -362,9 +362,6 @@ define( [
                         return self.searchingText;
                     }
                 },
-                escapeMarkup: function(markup){
-                    return markup;
-                },
                 templateResult : function (item) {
                     if(!item.id) {
                         // return `text` for optgroup
