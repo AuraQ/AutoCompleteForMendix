@@ -29,6 +29,7 @@ Where you have a large number of available options for a reference selector, use
 - **Select Source**: The reference association, starting from the dataview object.
 - **Minimum Input Length**: The minimum number of characters the user has to enter before search executes.
 - **Search Type**: 'XPath', 'Microflow' or 'Microflow (Cached)'; controls whether the search should use an XPath query, a Microflow called for each search or a Microflow that caches the results (by default the cache is populated on initialisation and when the context object is refreshed)
+- **Search Delay**: The delay, in milliseconds, before a search is executed.
 
 ## Search - XPath
 - **Search method**: 'starts-with' or 'contains'; controls how the attribute is searched
@@ -64,6 +65,11 @@ Where you have a large number of available options for a reference selector, use
 - **Disabled via attribute**: An optional parameter. If populated will use the selected boolean attribute to render the control in a disabled state or not (true = disabled). This property overrides the 'Disabled' parameter.
 - **Visible**: Whether to render the control visible or not.
 - **Visible via attribute**: An optional parameter. If populated will use the selected boolean attribute to render the control visible or not (true = visible). This property overrides the 'Visible' parameter.
+- **Select On Close**: If true, selects the highlighted value when the dropdown closes (e.g. when tabbing out of the control).
+- **Parent selector**: A CSS selector used to manage where the dropdown is rendered. E.g. leave empty for a main page, and use .modal-dialog for a modal
+- **Disable Dropdown Option**: Boolean attribute based on which the dropdown list item will be disabled
+- **Disable List Tooltip**: Specify the tooptip message for the disabled list values
+- **Open on focus**: If true, opens the dropdown automatically on the initial focus.
 
 ## No Results
 - **'No results found' text:** The text to be shown in the dropdown when a search returns no results.
@@ -78,6 +84,8 @@ Where you have a large number of available options for a reference selector, use
 
 ## Events
 - **On change**: The microflow that will be run when an item is selected or the control is cleared.
+- **Show Progress Bar**: Controls whether a progress bar should be displayed when executing the onchange microflow
+- **Progress Message**: The progress message to show when executing the onchange microflow
 
 # Known Issues
 

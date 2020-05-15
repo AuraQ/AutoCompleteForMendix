@@ -299,6 +299,11 @@
                 <category>Control Display</category>
                 <description>Specify the tooptip message for the disabled list values</description>
         </property>
+        <property key="openOnFocus" type="boolean" defaultValue="false">
+            <caption>Open on focus</caption>
+            <category>Control Display</category>
+            <description>If true, opens the dropdown automatically on the initial focus.</description>
+        </property>
         <!-- NO RESULT HANDLING PROPERTIES-->
         <property key="noResultsDisplayType" type="enumeration" defaultValue="text">
             <caption>'No results found' display type</caption>

@@ -4,10 +4,10 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 5.0.0
+    @version   : 6.0.0
     @author    : Iain Lindsay
-    @date      : 2019-09-23
-    @copyright : AuraQ Limited 2018
+    @date      : 2019-05-15
+    @copyright : AuraQ Limited 2020
     @license   : Apache V2
 
     Documentation
@@ -34,7 +34,7 @@ define( [
     "dojo/_base/event",
     "dojo/_base/kernel",
     "dojo/date/locale",
-    "AutoCompleteForMendix/lib/jquery-1.11.2",
+    "AutoCompleteForMendix/lib/jquery-3.5.1-custom",
     "AutoCompleteForMendix/lib/select2",
     "dojo/text!AutoCompleteForMendix/widget/template/AutoCompleteForMendix.html"
 ], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, dojo, dojoLocale, _jQuery, _select2, widgetTemplate) {
@@ -218,6 +218,8 @@ define( [
             this._queryAdapter = null;
             this._$combo.select2("destroy");
 
+            $(document).off('focus', '.select2-selection.select2-selection--single');
+
             // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
         },
 
@@ -300,10 +302,8 @@ define( [
                     self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
                 }
             })
-            .on("select2:close",function(e){
-                var setfocus = setTimeout(function() {
-                    self._$combo.select2('focus');
-                }, 0);                
+            .on("select2:closing",function(e){
+                self._$combo.select2('focus');                
             });
             
             this._$combo.data('select2')
@@ -312,13 +312,27 @@ define( [
                 this.dropdown._resizeDropdown();
             });
 
+            if(this.openOnFocus){
+                // on first focus (bubbles up to document), open the menu
+                $(document).on('focus', '.select2-selection.select2-selection--single', function (e) {
+                    $(this).closest(".select2-container").siblings('select:enabled').select2('open');
+                });
+                
+                // steal focus during close - only capture once and stop propagation
+                this._$combo.on('select2:closing', function (e) {
+                    $(e.target).data("select2").$selection.one('focus focusin', function (e) {
+                        e.stopPropagation();
+                    });
+                });
+            }
+
             this._updateControlDisplay();
             this._initialized = true;
 
             // set the default value for the dropdown (if reference is already set)
             this._loadCurrentValue(callback);
         },
-
+        
         _getSelect2Options : function(){
             var self = this;
             var options = {
@@ -384,6 +398,9 @@ define( [
 
             // if data view is disabled
             if(this.get("disabled")) {
+                this._$combo.prop('disabled',true);
+            }
+            else if (this._contextObj.isReadonlyAttr(this._reference)){
                 this._$combo.prop('disabled',true);
             }
             else {
@@ -1052,7 +1069,8 @@ define( [
                     options.progressMsg = message;
                 }
 
-                mx.ui.action(mf,options, this);
+                //mx.ui.action(mf,options, this);
+                mx.data.action(options);
             }
         }
         /* CUSTOM FUNCTIONS END HERE */
