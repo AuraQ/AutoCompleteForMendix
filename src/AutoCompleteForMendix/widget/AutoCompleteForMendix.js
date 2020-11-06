@@ -1,12 +1,11 @@
-/*global logger*/
 /*
     AutoCompleteForMendix
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 6.0.0
+    @version   : 6.0.1
     @author    : Iain Lindsay
-    @date      : 2019-05-15
+    @date      : 2020-11-06
     @copyright : AuraQ Limited 2020
     @license   : Apache V2
 
@@ -15,33 +14,24 @@
     AutoComplete widget built using Select2 (https://select2.github.io/).
 */
 
-// Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
 define( [
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
     "dijit/_TemplatedMixin",
-    "mxui/dom",
-    "dojo/dom",
-    "dojo/dom-prop",
-    "dojo/dom-geometry",
     "dojo/dom-class",
-    "dojo/dom-style",
     "dojo/dom-construct",
-    "dojo/_base/array", 
+    "dojo/_base/array",
     "dojo/_base/lang",
-    "dojo/text",
-    "dojo/html",
     "dojo/_base/event",
     "dojo/_base/kernel",
     "dojo/date/locale",
-    "AutoCompleteForMendix/lib/jquery-3.5.1-custom",
-    "AutoCompleteForMendix/lib/select2",
-    "dojo/text!AutoCompleteForMendix/widget/template/AutoCompleteForMendix.html"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, dojo, dojoLocale, _jQuery, _select2, widgetTemplate) {
+    "jquery",
+    "select2",
+    "dojo/text!AutoCompleteForMendix/widget/template/AutoCompleteForMendix.html",
+    "select2/dist/css/select2.css",
+    "./ui/AutoCompleteForMendix.css"
+], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoClass, dojoConstruct, dojoArray, dojoLang, dojoEvent, dojo, dojoLocale, $, _select2, widgetTemplate) {
     "use strict";
-
-    var $ = _jQuery.noConflict(true);
-    $ = _select2.createInstance($);
 
     // Declare widget's prototype.
     return declare("AutoCompleteForMendix.widget.AutoCompleteForMendix", [ _WidgetBase, _TemplatedMixin ], {
@@ -1075,8 +1065,4 @@ define( [
         }
         /* CUSTOM FUNCTIONS END HERE */
     });
-});
-
-require(["AutoCompleteForMendix/widget/AutoCompleteForMendix"], function() {
-    "use strict";
 });
