@@ -18,11 +18,11 @@ define( [
     "dojo/_base/declare",
     "mxui/widget/_WidgetBase",
     "dijit/_TemplatedMixin",
+    "mxui/dom",
     "dojo/dom-class",
     "dojo/dom-construct",
-    "dojo/_base/array",
+    "dojo/_base/array", 
     "dojo/_base/lang",
-    "dojo/_base/event",
     "dojo/_base/kernel",
     "dojo/date/locale",
     "jquery",
@@ -30,7 +30,7 @@ define( [
     "dojo/text!AutoCompleteForMendix/widget/template/AutoCompleteForMendix.html",
     "select2/dist/css/select2.css",
     "./ui/AutoCompleteForMendix.css"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoClass, dojoConstruct, dojoArray, dojoLang, dojoEvent, dojo, dojoLocale, $, _select2, widgetTemplate) {
+], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoClass, dojoConstruct, dojoArray, dojoLang, dojo, dojoLocale, $, _select2, widgetTemplate) {
     "use strict";
 
     // Declare widget's prototype.
@@ -211,14 +211,6 @@ define( [
             $(document).off('focus', '.select2-selection.select2-selection--single');
 
             // Clean up listeners, helper objects, etc. There is no need to remove listeners added with this.connect / this.subscribe / this.own.
-        },
-
-        // We want to stop events on a mobile device
-        _stopBubblingEventOnMobile: function(e) {
-            logger.debug(this.id + "._stopBubblingEventOnMobile");
-            if (typeof document.ontouchstart !== "undefined") {
-                dojoEvent.stop(e);
-            }
         },
 
         // Attach events to HTML dom elements
