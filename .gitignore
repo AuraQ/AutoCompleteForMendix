@@ -18,6 +18,7 @@ test 8/.project
 test 8/userlib/
 test 8/.classpath
 test 8/.project
+test 8/GPUCache/
 
 *.launch
 *.tmp
