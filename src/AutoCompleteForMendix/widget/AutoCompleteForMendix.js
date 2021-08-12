@@ -671,12 +671,19 @@ define( [
                         }
                     }
 
+                    var xpathAmount;
+                    if (self.maxRecords === 0) {
+                        xpathAmount = -1;
+                    } else {
+                        xpathAmount = self.maxRecords;
+                    }
+
                     mx.data.get({
                         xpath: xpath,
                         filter: {
                             sort: self._sortParams,
                             offset: 0,
-                            amount: self.maxRecords
+                            amount: xpathAmount
                         },
                         callback: searchCallback
                     });
