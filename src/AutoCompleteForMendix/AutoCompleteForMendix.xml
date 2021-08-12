@@ -67,10 +67,10 @@
             <category>Search - XPath</category>
             <description>Select the association from the source entity that the objects should be constrained by</description> 
         </property>
-        <property key="maxRecords" type="integer" required="true" defaultValue="0">
+        <property key="maxRecords" type="integer" required="true" defaultValue="-1">
             <caption>Max Records</caption>
             <category>Search - XPath</category>
-            <description>The maximum number of records to return (0 means no limit is applied)</description>
+            <description>The maximum number of records to return (-1 means no limit is applied)</description>
         </property>  
         <!-- MICROFLOW SEARCH PROPERTIES-->
         <property key="searchMicroflow" type="microflow" required="false">
