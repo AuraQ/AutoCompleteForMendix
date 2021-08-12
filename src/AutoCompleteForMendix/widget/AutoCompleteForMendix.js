@@ -3,10 +3,10 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 6.0.1
-    @author    : Iain Lindsay
-    @date      : 2020-11-06
-    @copyright : AuraQ Limited 2020
+    @version   : 7.0.0
+    @author    : Matthew Pratley
+    @date      : 2021-08-12
+    @copyright : AuraQ Limited 2021
     @license   : Apache V2
 
     Documentation
