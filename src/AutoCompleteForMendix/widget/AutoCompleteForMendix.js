@@ -70,14 +70,14 @@ define( [
         // dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
         constructor: function() {
             // Uncomment the following line to enable debug messages
-            //logger.level(logger.DEBUG);
-            logger.debug(this.id + ".constructor");
+            //mx.logger.level(mx.logger.DEBUG);
+            mx.logger.debug(this.id + ".constructor");
             this._handles = [];
         },
 
         // dijit._WidgetBase.postCreate is called after constructing the widget. Implement to do extra setup work.
         postCreate: function() {
-            logger.debug(this.id + ".postCreate");            
+            mx.logger.debug(this.id + ".postCreate");            
 
             $(document).on("touchstart",".select2", function(event){
                 $(event.target).trigger($.Event("click", {
@@ -142,7 +142,7 @@ define( [
 
         // mxui.widget._WidgetBase.update is called when context is changed or initialized. Implement to re-render and / or fetch data.
         update: function(obj, callback) {
-            logger.debug(this.id + ".update");
+            mx.logger.debug(this.id + ".update");
             var self = this;
 
             if (obj === null || !this._isValid) {
@@ -188,22 +188,22 @@ define( [
 
         // mxui.widget._WidgetBase.enable is called when the widget should enable editing. Implement to enable editing if widget is input widget.
         enable: function() {
-            logger.debug(this.id + ".enable");
+            mx.logger.debug(this.id + ".enable");
         },
 
         // mxui.widget._WidgetBase.enable is called when the widget should disable editing. Implement to disable editing if widget is input widget.
         disable: function() {
-            logger.debug(this.id + ".disable");
+            mx.logger.debug(this.id + ".disable");
         },
 
         // mxui.widget._WidgetBase.resize is called when the page's layout is recalculated. Implement to do sizing calculations. Prefer using CSS instead.
         resize: function(box) {
-            logger.debug(this.id + ".resize");
+            mx.logger.debug(this.id + ".resize");
         },
 
         // mxui.widget._WidgetBase.uninitialize is called when the widget is destroyed. Implement to do special tear-down work.
         uninitialize: function() {
-            logger.debug(this.id + ".uninitialize");
+            mx.logger.debug(this.id + ".uninitialize");
             this._displayAttributes = [];
             this._sortParams = [];
             this._queryAdapter = null;
@@ -216,41 +216,41 @@ define( [
 
         // Attach events to HTML dom elements
         _validateWidget: function() {
-            logger.debug(this.id + "._validateWidget");
+            mx.logger.debug(this.id + "._validateWidget");
             var valid = true;
 
             switch( this.searchType){
                 case "xpath":
                     if(!this.xpathSearchAttribute){
                         valid = false;
-                        logger.error(this.id + ": 'Search Attribute' must be specified with search type XPath.");
+                        mx.logger.error(this.id + ": 'Search Attribute' must be specified with search type XPath.");
                     }
                     break;
                 case "microflow":
                     if(!this.searchMicroflow){
                         valid = false;
-                        logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow.");
+                        mx.logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow.");
                     }
 
                     if(!this.searchStringAttribute){
                         valid = false;
-                        logger.error(this.id + ": 'Search String Attribute' must be specified with search type Microflow ");
+                        mx.logger.error(this.id + ": 'Search String Attribute' must be specified with search type Microflow ");
                     }
                     break;
                 case "microflowCache":
                     if(!this.cacheSearchMicroflow){
                         valid = false;
-                        logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow (Cached).");
+                        mx.logger.error(this.id + ": 'Search Microflow' must be specified with search type Microflow (Cached).");
                     }
 
                     if(!this.cacheSearchAttribute){
                         valid = false;
-                        logger.error(this.id + ": 'Search Attribute' must be specified with search type Microflow (Cached)");
+                        mx.logger.error(this.id + ": 'Search Attribute' must be specified with search type Microflow (Cached)");
                     }
                     break;
                 default:
                     valid = false;
-                    logger.error(this.id + ": Search type '" + this.searchType + "' not valid.");
+                    mx.logger.error(this.id + ": Search type '" + this.searchType + "' not valid.");
                     break;
             }
 
@@ -441,7 +441,7 @@ define( [
 
         // Rerender the interface.
         _updateRendering: function() {
-            logger.debug(this.id + "._updateRendering");
+            mx.logger.debug(this.id + "._updateRendering");
             var self = this;
 
             // Important to clear all validations!
@@ -498,7 +498,7 @@ define( [
 
         // Handle validations.
         _handleValidation: function(validations) {
-            logger.debug(this.id + "._handleValidation");
+            mx.logger.debug(this.id + "._handleValidation");
             this._clearValidations();
 
             var validation = validations[0],
@@ -527,7 +527,7 @@ define( [
 
         // Clear validations.
         _clearValidations: function() {
-            logger.debug(this.id + "._clearValidations");
+            mx.logger.debug(this.id + "._clearValidations");
             if( this._$alertdiv ) {
                 var selector = '#' + this.id;
                 var $formGroup = $(selector); 
@@ -539,7 +539,7 @@ define( [
 
         // Add a validation.
         _addValidation: function(message) {
-            logger.debug(this.id + "._addValidation");
+            mx.logger.debug(this.id + "._addValidation");
             this._$alertdiv = $("<div></div>").addClass('alert alert-danger mx-validation-message').html(message);
             var selector = '#' + this.id;
             var $formGroup = $(selector); 
@@ -568,7 +568,7 @@ define( [
 
         // Reset subscriptions.
         _resetSubscriptions: function() {
-            logger.debug(this.id + "._resetSubscriptions");
+            mx.logger.debug(this.id + "._resetSubscriptions");
             // Release handles on previous object, if any.
             if (this._handles) {
                 dojoArray.forEach(this._handles, dojoLang.hitch(this, function (handle) {
@@ -653,8 +653,8 @@ define( [
                 var searchCallback = 
                     dojoLang.hitch(self, function(objs){
                         // only process the results if our search term hasn't changed since the query was executed
-                        logger.debug("_currentSearchTerm: " + self._currentSearchTerm);
-                        logger.debug("params.term: " + params.term);
+                        mx.logger.debug("_currentSearchTerm: " + self._currentSearchTerm);
+                        mx.logger.debug("params.term: " + params.term);
                         if( self._currentSearchTerm == params.term ){
                             var results = self._processResults(objs, self._formatResults, callback);
                         }
@@ -851,7 +851,7 @@ define( [
             }
 
             if (callback && typeof callback === "function") {
-                logger.debug(this.id + "._formatResults callback");
+                mx.logger.debug(this.id + "._formatResults callback");
                 callback({
                     results: matches
                 });
@@ -900,13 +900,13 @@ define( [
             this.currentValue = selectedDisplay;
 
             if (callback && typeof callback === "function") {
-                logger.debug(this.id + "._formatCurrentValue callback");
+                mx.logger.debug(this.id + "._formatCurrentValue callback");
                 callback();
             }
         },
 
         _fetchAttribute: function (obj, attr, i, escapeValues) {
-            logger.debug(this.id + "._fetchAttribute");
+            mx.logger.debug(this.id + "._fetchAttribute");
             var returnvalue = "",
                 options = {},
                 numberOptions = null;
@@ -949,7 +949,7 @@ define( [
         },
 
         _fetchReferences: function (referenceAttributes, formatResultsFunction, callback) {
-            logger.debug(this.id + "._fetchReferences");
+            mx.logger.debug(this.id + "._fetchReferences");
             this._currentReferenceAttributesLength = referenceAttributes.length;
              
             for (var i = 0; i < referenceAttributes.length; i++) {
@@ -978,7 +978,7 @@ define( [
         },
 
         _fetchReferenceCallback : function (data, formatResultsFunction, callback, obj) {
-            logger.debug(this.id + "._fetchReferences get callback");
+            mx.logger.debug(this.id + "._fetchReferences get callback");
 
             if(obj != null){
 
@@ -1013,7 +1013,7 @@ define( [
         },
 
         _checkString: function (str, escapeValues) {
-            logger.debug(this.id + "._checkString");
+            mx.logger.debug(this.id + "._checkString");
             if (str.indexOf("<script") > -1 || escapeValues) {
                 str = dom.escapeString(str);
             }
@@ -1021,7 +1021,7 @@ define( [
         },
 
         _parseDate: function (format, options, value) {
-            logger.debug(this.id + "._parseDate");
+            mx.logger.debug(this.id + "._parseDate");
             var datevalue = value;
 
             if (value === "") {
@@ -1064,7 +1064,7 @@ define( [
                         }
                     },
                     error: function (e) {
-                        logger.error('Error running Microflow: ' + e);
+                        mx.logger.error('Error running Microflow: ' + e);
                     }
                 }
 
