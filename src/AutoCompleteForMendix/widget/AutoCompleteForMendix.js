@@ -65,6 +65,7 @@ define( [
         _alertDiv: null,
         _hadValidationFeedback: false,
         _initialized: false,
+        _currentValue: "",
 
         // dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
         constructor: function() {
@@ -265,6 +266,7 @@ define( [
                 if( e.params && e.params.data ){                        
                     var guid = e.params.data.id;                        
                     self._contextObj.addReference(self._reference, guid);
+                    self._currentValue = e.params.data.text;
                 }
 
                 // run the OC microflow if one has been configured.                   
@@ -277,6 +279,7 @@ define( [
                 if( e.params && e.params.data ){                        
                     var guid = e.params.data.id;
                     self._contextObj.removeReferences(self._reference, [guid]);
+                    self._currentValue = "";
                 }
 
                 // run the OC microflow if one has been configured.                   
@@ -286,6 +289,15 @@ define( [
             })
             .on("select2:closing",function(e){
                 self._$combo.select2('focus');                
+            })
+            .on('select2:open', function (e) {
+                if (self.preserveSearchValue) {
+                    // async trigger required in case the user re-oping before losing focus.
+                    setTimeout(function(){
+                        $('.select2-search input').val(self._currentValue).trigger('change').trigger("input");
+                    }, 0);
+                    
+                }
             });
             
             this._$combo.data('select2')
@@ -473,12 +485,14 @@ define( [
                         }
                         else{
                             this._$combo.val(null).trigger("change");
+                            this._currentValue = "";
                         }
                     })
                 });
             }
             else{
                 this._$combo.val(null).trigger("change");
+                this._currentValue = "";
             }
         },	
 
@@ -883,6 +897,7 @@ define( [
 
                 this._$combo.append($option).trigger('change'); // append the option and update Select2
             }
+            this.currentValue = selectedDisplay;
 
             if (callback && typeof callback === "function") {
                 logger.debug(this.id + "._formatCurrentValue callback");
