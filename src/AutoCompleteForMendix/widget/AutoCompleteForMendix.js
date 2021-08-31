@@ -356,7 +356,8 @@ define( [
                                 href:"#",
                                 innerHTML: self.noResultsText,
                                 'class':"btn btn-block btn-noResults",
-                                onclick:function(){
+                                onclick:function(event){
+                                    event.preventDefault();
                                     self._contextObj.set(self.noResultsSearchStringAttribute, self._currentSearchTerm);
                                     self._execMf(self._contextObj.getGuid(), self.noResultsMicroflow);
                                     self._$combo.select2("close");
