@@ -20,6 +20,17 @@ test 8/.classpath
 test 8/.project
 test 8/GPUCache/
 
+test 9/javasource/*
+!test 9/javasource/testsuite_default
+test 9/javasource/testsuite_default/proxies/*
+test 9/deployment/
+test 9/.classpath
+test 9/.project
+test 9/userlib/
+test 9/.classpath
+test 9/.project
+test 9/GPUCache/
+
 *.launch
 *.tmp
 *.lock
