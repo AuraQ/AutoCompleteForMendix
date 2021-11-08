@@ -1,7 +1,7 @@
 {
   "name": "auto-complete-for-mendix",
   "widgetName": "AutoCompleteForMendix",
-  "version": "6.0.1",
+  "version": "6..0",
   "description": "An auto completion widget built using Select2 (https://select2.github.io/)",
   "license": "Apache V2",
   "author": "Iain Lindsay",
