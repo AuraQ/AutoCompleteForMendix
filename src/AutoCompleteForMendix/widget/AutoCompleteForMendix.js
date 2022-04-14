@@ -353,7 +353,6 @@ define( [
 
                         if(self.noResultsDisplayType === "button" && self.noResultsMicroflow){                                
                             retval = dojoConstruct.create("a",{
-                                href:"#",
                                 innerHTML: self.noResultsText,
                                 'class':"btn btn-block btn-noResults",
                                 onclick:function(){
